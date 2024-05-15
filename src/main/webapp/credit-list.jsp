@@ -13,7 +13,7 @@
 
 	<header>
 		<nav class="navbar navbar-expand-md navbar-dark"
-			style="background-color: tomato">
+			style="background-color: grey">
 			<div>
 				<a class="navbar-brand"> 
 					Credit Management App </a>
@@ -50,7 +50,6 @@
 					</tr>
 				</thead>
 				<tbody>
-					<!--   for (Todo todo: todos) {  -->
 					<c:forEach var="Credit" items="${listCredit}">
 
 						<tr>
@@ -68,7 +67,6 @@
 								href="delete?accountno=<c:out value='${Credit.accountno}' />">Delete</a></td>
 						</tr>
 					</c:forEach>
-					<!-- } -->
 				</tbody>
 
 			</table>

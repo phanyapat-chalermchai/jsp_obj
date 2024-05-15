@@ -65,6 +65,7 @@ public class CreditServlet extends HttpServlet {
 
     private void listCredit(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException {
+        System.out.println("goin0");
         List<Credit> listCredit = creditDAO.selectAllCredits();
         request.setAttribute("listCredit", listCredit);
         RequestDispatcher dispatcher = request.getRequestDispatcher("credit-list.jsp");
