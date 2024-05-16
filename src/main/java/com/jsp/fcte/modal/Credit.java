@@ -1,4 +1,4 @@
-package com.jsp.creditmanagement.modal;
+package com.jsp.fcte.modal;
 
 import java.math.BigDecimal;
 import java.sql.Date;

@@ -1,8 +1,9 @@
-package com.jsp.creditmanagement.web;
+package com.jsp.fcte.controller;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -15,17 +16,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.jsp.creditmanagement.dao.*;
-import com.jsp.creditmanagement.modal.*;
+import com.jsp.fcte.dao.*;
+import com.jsp.fcte.modal.*;
 
 
 @WebServlet("/")
-public class CreditServlet extends HttpServlet {
+public class Fcte011Controller extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private CreditDAO creditDAO;
+	private Fcte011DAO accPaymentDAO;
 	
 	public void init() {
-		creditDAO = new CreditDAO();
+		accPaymentDAO = new Fcte011DAO();
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -43,19 +44,19 @@ public class CreditServlet extends HttpServlet {
 				showNewForm(request, response);
 				break;
 			case "/insert":
-				insertCredit(request, response);
+				insertAccPayment(request, response);
 				break;
 			case "/delete":
-				deleteCredit(request, response);
+				deleteAccPayment(request, response);
 				break;
 			case "/edit":
 				showEditForm(request, response);
 				break;
 			case "/update":
-				updateCredit(request, response);
+				updateAccPayment(request, response);
 				break;
 			default:
-				listCredit(request, response);
+				listAccPayment(request, response);
 				break;
 			}
 		} catch (SQLException ex) {
@@ -63,32 +64,37 @@ public class CreditServlet extends HttpServlet {
 		}
 	}
 
-    private void listCredit(HttpServletRequest request, HttpServletResponse response)
+    private void listAccPayment(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException {
-        System.out.println("goin0");
-        List<Credit> listCredit = creditDAO.selectAllCredits();
-        request.setAttribute("listCredit", listCredit);
-        RequestDispatcher dispatcher = request.getRequestDispatcher("credit-list.jsp");
+        System.out.println("goin listAccPayment 314");
+        List<AccPayment> listAccPayment = accPaymentDAO.selectAllAccPayments();
+        request.setAttribute("listAccPayment", listAccPayment);
+        RequestDispatcher dispatcher = request.getRequestDispatcher("list.jsp");
         dispatcher.forward(request, response);
     }
 
     private void showNewForm(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        RequestDispatcher dispatcher = request.getRequestDispatcher("credit-form.jsp");
+        RequestDispatcher dispatcher = request.getRequestDispatcher("form.jsp");
         dispatcher.forward(request, response);
     }
 
     private void showEditForm(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, ServletException, IOException {
-        String accountno = request.getParameter("accountno");
-        Credit existingCredit = creditDAO.selectCredit(accountno);
-        RequestDispatcher dispatcher = request.getRequestDispatcher("credit-form.jsp");
-        request.setAttribute("credit", existingCredit);
+        System.out.println("goin showEditForm");
+        String custcode = getNonNullString(request, "custcode");
+        String account = getNonNullString(request, "account");
+        String transtype = getNonNullString(request, "transtype");
+        String rptype = getNonNullString(request, "rptype");
+        AccPayment existingAccPayment = accPaymentDAO.selectAccPayment(custcode, account, transtype, rptype);
+        RequestDispatcher dispatcher = request.getRequestDispatcher("form.jsp");
+        request.setAttribute("accPayment", existingAccPayment);
         dispatcher.forward(request, response);
     }
 
-    private void insertCredit(HttpServletRequest request, HttpServletResponse response)
+    private void insertAccPayment(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException {
+    	
         String accountno = request.getParameter("accountno");
         String transtype = request.getParameter("transtype");
         
@@ -107,12 +113,12 @@ public class CreditServlet extends HttpServlet {
         BigDecimal amount = request.getParameter("amount") != "" ? new BigDecimal(request.getParameter("amount")) : null;
         String remark = request.getParameter("remark");
         
-        Credit newCredit = new Credit(accountno, transtype, sqlEffectDate, amount, remark);
-        creditDAO.insertCredit(newCredit);
+        AccPayment newAccPayment = new AccPayment();
+        accPaymentDAO.insertAccPayment(newAccPayment);
         response.sendRedirect("list");
     }
 
-    private void updateCredit(HttpServletRequest request, HttpServletResponse response)
+    private void updateAccPayment(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException {
         String accountno = request.getParameter("accountno");
         String transtype = request.getParameter("transtype");
@@ -133,16 +139,21 @@ public class CreditServlet extends HttpServlet {
         BigDecimal amount = request.getParameter("amount") != "" ? new BigDecimal(request.getParameter("amount")) : null;
         String remark = request.getParameter("remark");
 
-        Credit credit = new Credit(accountno, transtype, sqlEffectDate, amount, remark);
-        creditDAO.updateCredit(credit);
+        AccPayment accPayment = new AccPayment();
+        accPaymentDAO.updateAccPayment(accPayment);
         response.sendRedirect("list");
     }
 
-    private void deleteCredit(HttpServletRequest request, HttpServletResponse response)
+    private void deleteAccPayment(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException {
         String accountno = request.getParameter("accountno");
-        creditDAO.deleteCredit(accountno);
+        accPaymentDAO.deleteAccPayment(accountno);
         response.sendRedirect("list");
+    }
+    
+    private String getNonNullString(HttpServletRequest rq, String columnLabel) throws SQLException {
+        String value = rq.getParameter(columnLabel);
+        return value != null && !value.isEmpty() ? value : null;
     }
 
 }

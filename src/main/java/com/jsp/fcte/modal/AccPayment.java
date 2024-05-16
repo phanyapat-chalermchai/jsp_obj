@@ -1,6 +1,5 @@
-package com.jsp.creditmanagement.modal;
+package com.jsp.fcte.modal;
 
-import java.math.BigDecimal;
 import java.sql.Date;
 
 public class AccPayment {
@@ -8,7 +7,7 @@ public class AccPayment {
 	protected String custacct;
 	protected String custcode;
 	protected String account;
-	protected String trantype;
+	protected String transtype;
 	protected String rptype;
 	protected String bankcheqcode;
 	protected String bankcode;
@@ -26,9 +25,7 @@ public class AccPayment {
     }
 
     // Constructor with parameters
-
-    // Constructor with parameters
-    public AccPayment(String cardid, String custacct, String custcode, String account, String trantype, 
+    public AccPayment(String cardid, String custacct, String custcode, String account, String transtype, 
                       String rptype, String bankcheqcode, String bankcode, String bankbranchcode, 
                       String bankaccno, String bankacctype, String bankcheqcodeextra, String paytype, 
                       String crosstype, Date effdate, Date enddate) {
@@ -36,7 +33,7 @@ public class AccPayment {
         this.custacct = custacct;
         this.custcode = custcode;
         this.account = account;
-        this.trantype = trantype;
+        this.transtype = transtype;
         this.rptype = rptype;
         this.bankcheqcode = bankcheqcode;
         this.bankcode = bankcode;
@@ -85,12 +82,12 @@ public class AccPayment {
         this.account = account;
     }
 
-    public String getTrantype() {
-        return trantype;
+    public String getTranstype() {
+        return transtype;
     }
 
-    public void setTrantype(String trantype) {
-        this.trantype = trantype;
+    public void setTrantype(String transtype) {
+        this.transtype = transtype;
     }
 
     public String getRptype() {
