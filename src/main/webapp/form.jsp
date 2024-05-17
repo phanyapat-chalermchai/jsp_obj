@@ -3,30 +3,44 @@
 <%@ page import="java.util.Date" %>
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="com.jsp.fcte.modal.AccPayment" %>
+<link rel="stylesheet" href="path/to/datepicker.css">
+<script src="path/to/jquery.js"></script>
+<script src="path/to/datepicker.js"></script>
+				
+<script type="text/javascript">
+	$('.form-group.date').datepicker({
+	todayBtn: "linked",
+	autoclose: true,
+	todayHighlight: true,
+	format: 'dd/mm/yyyy'
+	});
+</script>
+				
+<% 
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+	AccPayment accPayment = (AccPayment) request.getAttribute("accPayment");
+	String formattedEndDate = null;
+	if (accPayment != null && accPayment.getEnddate() != null) {
+		formattedEndDate = sdf.format(accPayment.getEnddate());
+	}
+
+    String formattedEffectDate = null;
+    if (accPayment != null && accPayment.getEffdate() != null){
+        formattedEffectDate = sdf.format(accPayment.getEffdate());
+    }
+	
+%>
 
 <html>
 <head>
 <title> Management Application</title>
-<link rel="stylesheet"
-	href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-	integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
-	crossorigin="anonymous">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
 <body>
 
-	<header>
-		<nav class="navbar navbar-expand-md navbar-dark"
-			style="background-color: grey">
-			<div>
-				<a class="navbar-brand"> Management App </a>
-			</div>
-
-			<ul class="navbar-nav">
-				<li><a href="<%=request.getContextPath()%>/list"
-					class="nav-link">List</a></li>
-			</ul>
-		</nav>
-	</header>
+    <jsp:include page="navbar.jsp" />
+    
 	<br>
 	<div class="container col-md-5">
 		<div class="card">
@@ -51,28 +65,33 @@
 				<br/>
 				
                 <fieldset class="form-group">
+                    <label>Card ID</label> 
+                    <input type="text" class="form-control" name="cardid" value="<c:out value='${accPayment.cardid}' />" <c:if test="${accPayment != null}">disabled</c:if>>
+                </fieldset>
+				
+                <fieldset class="form-group">
                     <label>Customer Account</label> 
-                    <input type="text" class="form-control" name="custacct" value="<c:out value='${accPayment.custacct}' />">
+                    <input type="text" class="form-control" name="custacct" value="<c:out value='${accPayment.custacct}' />" <c:if test="${accPayment != null}">disabled</c:if>>
                 </fieldset>
                 
                 <fieldset class="form-group">
                     <label>Customer Code</label> 
-                    <input type="text" class="form-control" name="custcode" value="<c:out value='${accPayment.custcode}' />">
+                    <input type="text" class="form-control" name="custcode" value="<c:out value='${accPayment.custcode}' />" <c:if test="${accPayment != null}">disabled</c:if>>
                 </fieldset>
 
                 <fieldset class="form-group">
                     <label>Account</label> 
-                    <input type="text" class="form-control" name="account" value="<c:out value='${accPayment.account}' />">
+                    <input type="text" class="form-control" name="account" value="<c:out value='${accPayment.account}' />" <c:if test="${accPayment != null}">disabled</c:if>>
                 </fieldset>
 
                 <fieldset class="form-group">
                     <label>Transaction Type</label> 
-                    <input type="text" class="form-control" name="transtype" value="<c:out value='${accPayment.transtype}' />">
+                    <input type="text" class="form-control" name="transtype" value="<c:out value='${accPayment.transtype}' />" <c:if test="${accPayment != null}">disabled</c:if>>
                 </fieldset>
                 
 				<fieldset class="form-group">
 				    <label>RP Type</label> 
-				    <select class="form-control" name="rptype">
+				    <select class="form-control" name="rptype" <c:if test="${accPayment != null}">disabled</c:if>>
 				        <option value="R" <c:if test="${accPayment.rptype == 'R'}">selected</c:if>>Revieve</option>
 				        <option value="P" <c:if test="${accPayment.rptype == 'P'}">selected</c:if>>Payment</option>
 				    </select>
@@ -98,10 +117,15 @@
                     <input type="text" class="form-control" name="bankaccno" value="<c:out value='${accPayment.bankaccno}' />">
                 </fieldset>
 
-                <fieldset class="form-group">
-                    <label>Bank Account Type</label> 
-                    <input type="text" class="form-control" name="bankacctype" value="<c:out value='${accPayment.bankacctype}' />">
-                </fieldset>
+
+                
+				<fieldset class="form-group">
+				    <label>Bank Account Type</label> 
+				    <select class="form-control" name="bankacctype">
+				        <option value="0" <c:if test="${accPayment.bankacctype == '0'}">selected</c:if>>บัญชีกระแสรายวัน</option>
+				        <option value="1" <c:if test="${accPayment.bankacctype == '1'}">selected</c:if>>บัญชีออมทรัพย์</option>
+				    </select>
+				</fieldset>
 
                 <fieldset class="form-group">
                     <label>Bank Cheque Code Extra</label> 
@@ -119,21 +143,12 @@
                 </fieldset>
 				
 				
+				
 				<c:if test="${accPayment != null && accPayment.getEffdate() != null}">
-				    <%
-				    	AccPayment accPayment = (AccPayment) request.getAttribute("accPayment");
-				        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-				        String formattedEffectDate = null;
-				        if (accPayment != null && accPayment.getEffdate() != null){
-				            formattedEffectDate = sdf.format(accPayment.getEffdate());
-				    %>
 				    <fieldset class="form-group">
 				        <label>Effect Date</label> 
 				        <input type="date" value="<%=formattedEffectDate%>" class="form-control" name="effectdate">
 				    </fieldset>
-				    <%
-				        }
-				    %>
 				</c:if>
 				<c:if test="${accPayment == null || accPayment.getEffdate() == null}">
 				    <fieldset class="form-group">
@@ -142,51 +157,27 @@
 				    </fieldset>
 				</c:if>
 				
+			
+			
+				<c:if test="${accPayment != null && accPayment.getEnddate() != null}">
+				    <fieldset class="form-group date">
+				        <label>Effect Date</label> 
+				        <input type="date" value="<%=formattedEndDate%>" class="form-control" name="enddate">
+				    </fieldset>
+				</c:if>
+				<c:if test="${accPayment == null || accPayment.getEnddate() == null}">
+				    <fieldset class="form-group date">
+				        <label>End Date</label> 
+				        <input type="date" class="form-control" name="enddate" maxlength="4">
+				    </fieldset>
+				</c:if>
 				
 				
 				
+				<br/>
+				<button type="submit" class="btn btn-success">Save</button>
 				
-			<% 
-			    AccPayment accPayment = (AccPayment) request.getAttribute("accPayment");
-			    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-			    String formattedEndDate = null;
-			    if (accPayment != null && accPayment.getEnddate() != null) {
-			        formattedEndDate = sdf.format(accPayment.getEnddate());
-			    }
-			%>
-			
-			<c:if test="${accPayment != null && accPayment.getEnddate() != null}">
-			    <fieldset class="form-group date">
-			        <label>Effect Date</label> 
-			        <input type="date" value="<%=formattedEndDate%>" class="form-control" name="effectdate">
-			    </fieldset>
-			</c:if>
-			<c:if test="${accPayment == null || accPayment.getEnddate() == null}">
-			    <fieldset class="form-group date">
-			        <label>End Date</label> 
-			        <input type="date" class="form-control" name="effectdate" maxlength="4">
-			    </fieldset>
-			</c:if>
-			
-			<br/>
-			
-			<button type="submit" class="btn btn-success">Save</button>
-			</form>
-			
-			<!-- Make sure you have included the necessary CSS and JS files for the datepicker -->
-			<link rel="stylesheet" href="path/to/datepicker.css">
-			<script src="path/to/jquery.js"></script>
-			<script src="path/to/datepicker.js"></script>
-			
-			<script type="text/javascript">
-			   $('.form-group.date').datepicker({
-			       todayBtn: "linked",
-			       autoclose: true,
-			       todayHighlight: true,
-			       format: 'dd/mm/yyyy'
-			   });
-			</script>
-
+				</form>
 			</div>
 		</div>
 	</div>

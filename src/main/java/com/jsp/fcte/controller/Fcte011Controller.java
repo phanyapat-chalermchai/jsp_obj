@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.RequestDispatcher;
@@ -55,8 +56,11 @@ public class Fcte011Controller extends HttpServlet {
 			case "/update":
 				updateAccPayment(request, response);
 				break;
-			default:
+			case "/searchList":
 				listAccPayment(request, response);
+				break;
+			default:
+				resetListAccPayment(request, response);
 				break;
 			}
 		} catch (SQLException ex) {
@@ -64,19 +68,29 @@ public class Fcte011Controller extends HttpServlet {
 		}
 	}
 
+    private void resetListAccPayment(HttpServletRequest request, HttpServletResponse response)
+            throws SQLException, IOException, ServletException {
+
+        List<AccPayment> listAccPayment = new ArrayList<>();
+        request.setAttribute("listAccPayment", listAccPayment);
+        RequestDispatcher dispatcher = request.getRequestDispatcher("list.jsp");
+        
+        dispatcher.forward(request, response);
+    }
+
     private void listAccPayment(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException {
     	
-        String appId = getNonNullString(request, "appId");
-        String custCode = getNonNullString(request, "custId");
-        String custName = getNonNullString(request, "custName");
-        String marketingId = getNonNullString(request, "marketingId");
-        String channel = getNonNullString(request, "channel");
-        String cardId = getNonNullString(request, "cardId");
-        String fullName = getNonNullString(request, "fullName");
-        String branch = getNonNullString(request, "branch");
+        String appId = request.getParameter("appId");
+        String custCode = request.getParameter("custId");
+        String custName = request.getParameter("custName");
+        String marketingId = request.getParameter("marketingId");
+        String channel = request.getParameter("channel");
+        String cardId = request.getParameter("cardId");
+        String fullName = request.getParameter("fullName");
+        String branch = request.getParameter("branch");
         
-        List<AccPayment> listAccPayment = accPaymentDAO.seachListAccPayment(appId, custCode, custName,
+        List<AccPayment> listAccPayment = accPaymentDAO.searchListAccPayment(appId, custCode, custName,
         		marketingId, channel, cardId, fullName, branch);
         request.setAttribute("listAccPayment", listAccPayment);
         RequestDispatcher dispatcher = request.getRequestDispatcher("list.jsp");
@@ -92,10 +106,10 @@ public class Fcte011Controller extends HttpServlet {
     private void showEditForm(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, ServletException, IOException {
         System.out.println("goin showEditForm");
-        String custcode = getNonNullString(request, "custcode");
-        String account = getNonNullString(request, "account");
-        String transtype = getNonNullString(request, "transtype");
-        String rptype = getNonNullString(request, "rptype");
+        String custcode = request.getParameter("custcode");
+        String account = request.getParameter("account");
+        String transtype = request.getParameter("transtype");
+        String rptype = request.getParameter("rptype");
         AccPayment existingAccPayment = accPaymentDAO.selectAccPayment(custcode, account, transtype, rptype);
         RequestDispatcher dispatcher = request.getRequestDispatcher("form.jsp");
         request.setAttribute("accPayment", existingAccPayment);
@@ -104,66 +118,96 @@ public class Fcte011Controller extends HttpServlet {
 
     private void insertAccPayment(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException {
-    	
-        String accountno = request.getParameter("accountno");
+    	// Retrieve the form parameters
+    	String cardid = request.getParameter("cardid");
+        String custacct = request.getParameter("custacct");
+        String custcode = request.getParameter("custcode");
+        String account = request.getParameter("account");
         String transtype = request.getParameter("transtype");
+        String rptype = request.getParameter("rptype");
+        String bankcheqcode = request.getParameter("bankcheqcode");
+        String bankcode = request.getParameter("bankcode");
+        String bankbranchcode = request.getParameter("bankbranchcode");
+        String bankaccno = request.getParameter("bankaccno");
+        String bankacctype = request.getParameter("bankacctype");
+        String bankcheqcodeextra = request.getParameter("bankcheqcodeextra");
+        String paytype = request.getParameter("paytype");
+        String crosstype = request.getParameter("crosstype");
         
-        String effectDateStr = request.getParameter("effectdate");
-        java.sql.Date sqlEffectDate = null;
-        if(effectDateStr != null && effectDateStr != "")
-	        try {
-	            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-	            java.util.Date utilEffectDate = dateFormat.parse(effectDateStr);
-	            sqlEffectDate = new Date(utilEffectDate.getTime());
-	        } catch (ParseException e) {
-	            // Handle parsing exception
-	            e.printStackTrace();
-	        }
+        String effectdateStr = request.getParameter("effectdate");
+        Date effectdate = null;
+        if (effectdateStr != null && !effectdateStr.isEmpty()) {
+        	effectdate = Date.valueOf(effectdateStr);
+        }
         
-        BigDecimal amount = request.getParameter("amount") != "" ? new BigDecimal(request.getParameter("amount")) : null;
-        String remark = request.getParameter("remark");
+        String enddateStr = request.getParameter("enddate");
+        Date enddate = null;
+        if (enddateStr != null && !enddateStr.isEmpty()) {
+        	enddate = Date.valueOf(enddateStr);
+        }
+
+        // Create a new AccPayment object with the retrieved values
+        AccPayment newAccPayment = new AccPayment(cardid, custacct, custcode, account, transtype, rptype, bankcheqcode,
+                bankcode, bankbranchcode, bankaccno, bankacctype, bankcheqcodeextra, paytype, crosstype, effectdate,
+                enddate);
         
-        AccPayment newAccPayment = new AccPayment();
+        // Insert the newAccPayment into the database using accPaymentDAO
         accPaymentDAO.insertAccPayment(newAccPayment);
-        response.sendRedirect("list");
+        
+        // Redirect the user to the list page
+        response.sendRedirect("searchList?custcode="+ custcode);
     }
 
     private void updateAccPayment(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException {
-        String accountno = request.getParameter("accountno");
+    	// Retrieve the form parameters
+        String cardid = request.getParameter("cardid");
+        String custacct = request.getParameter("custacct");
+        String custcode = request.getParameter("custcode");
+        String account = request.getParameter("account");
         String transtype = request.getParameter("transtype");
+        String rptype = request.getParameter("rptype");
+        String bankcheqcode = request.getParameter("bankcheqcode");
+        String bankcode = request.getParameter("bankcode");
+        String bankbranchcode = request.getParameter("bankbranchcode");
+        String bankaccno = request.getParameter("bankaccno");
+        String bankacctype = request.getParameter("bankacctype");
+        String bankcheqcodeextra = request.getParameter("bankcheqcodeextra");
+        String paytype = request.getParameter("paytype");
+        String crosstype = request.getParameter("crosstype");
         
-        String effectDateStr = request.getParameter("effectdate");
-        java.sql.Date sqlEffectDate = null;
-        System.out.print(effectDateStr);
-        if(effectDateStr != null && effectDateStr != "")
-	        try {
-	            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-	            java.util.Date utilEffectDate = dateFormat.parse(effectDateStr);
-	            sqlEffectDate = new Date(utilEffectDate.getTime());
-	        } catch (ParseException e) {
-	            // Handle parsing exception
-	            e.printStackTrace();
-	        }
+        String effectdateStr = request.getParameter("effectdate");
+        Date effectdate = null;
+        if (effectdateStr != null && !effectdateStr.isEmpty()) {
+        	effectdate = Date.valueOf(effectdateStr);
+        }
+        
+        String enddateStr = request.getParameter("enddate");
+        Date enddate = null;
+        if (enddateStr != null && !enddateStr.isEmpty()) {
+        	enddate = Date.valueOf(enddateStr);
+        }
 
-        BigDecimal amount = request.getParameter("amount") != "" ? new BigDecimal(request.getParameter("amount")) : null;
-        String remark = request.getParameter("remark");
-
-        AccPayment accPayment = new AccPayment();
+        // Create a new AccPayment object with the retrieved values
+        AccPayment accPayment = new AccPayment(cardid, custacct, custcode, account, transtype, rptype, bankcheqcode,
+                bankcode, bankbranchcode, bankaccno, bankacctype, bankcheqcodeextra, paytype, crosstype, effectdate,
+                enddate);
+        
+        // Update the accPayment in the database using accPaymentDAO
         accPaymentDAO.updateAccPayment(accPayment);
-        response.sendRedirect("list");
+        
+        // Redirect the user to the list page
+        response.sendRedirect("searchList?custcode="+ custcode);
     }
 
     private void deleteAccPayment(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException {
-        String accountno = request.getParameter("accountno");
-        accPaymentDAO.deleteAccPayment(accountno);
+        String custcode = request.getParameter("custcode");
+        String account = request.getParameter("account");
+        String transtype = request.getParameter("transtype");
+        String rptype = request.getParameter("rptype");
+        accPaymentDAO.deleteAccPayment(custcode, account, transtype, rptype);
         response.sendRedirect("list");
-    }
-    
-    private String getNonNullString(HttpServletRequest rq, String columnLabel) throws SQLException {
-        String value = rq.getParameter(columnLabel);
-        return value != null && !value.isEmpty() ? value : null;
     }
 
 }

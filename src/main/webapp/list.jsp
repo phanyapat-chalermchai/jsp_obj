@@ -4,40 +4,25 @@
 <html>
 <head>
 <title>FCTE011</title>
-<link rel="stylesheet"
-	href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-	integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
-	crossorigin="anonymous">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<style>
+    tbody tr:hover {
+        background-color: #bee0ec;
+    }
+</style>
 </head>
 <body>
 
-	<header>
-		<nav class="navbar navbar-expand-md navbar-dark"
-			style="background-color: grey">
-			<div>
-				<a class="navbar-brand"> 
-					FCTE011 </a>
-			</div>
-
-			<ul class="navbar-nav">
-				<li><a href="<%=request.getContextPath()%>/list"
-					class="nav-link">List</a></li>
-			</ul>
-		</nav>
-	</header>
+    <jsp:include page="navbar.jsp" />
+    
 	<br>
-
 	<div class="row">
-		<!-- <div class="alert alert-success" *ngIf='message'>{{message}}</div> -->
-
 		<div class="container">
-			<!-- <h3 class="text-center">FCTE011</h3> -->
             <br>
 			
-            
             <!-- Two-Column Search Form with Inline Labels and Inputs -->
-            <form method="get" action="<%=request.getContextPath()%>/list" class="form">
-                <div class="form-row" style="text-align: center">
+            <form id="searchForm" method="get" action="<%=request.getContextPath()%>/searchList" class="form">
+                <div class="form-row" style="text-align: center; align-items:center; justify-content-:center; ">
                     <!-- First Column -->
                     <div class="col-md-6">
                         <div class="form-group row">
@@ -96,38 +81,36 @@
                 <div class="form-row">
                     <div class="col-md-12 text-right">
                         <button type="submit" class="btn btn-primary">Search</button>
+            			<button type="reset" class="btn btn-secondary" onclick="window.location.href='<%=request.getContextPath()%>/list'">Reset</button>
                     </div>
                 </div>
             </form>
 			<hr>
             
 			<div class="container text-left">
-
-				<a href="<%=request.getContextPath()%>/new" class="btn btn-success">Add
-					New</a>
+				<a href="<%=request.getContextPath()%>/new" class="btn btn-success">Add New</a>
 			</div>
 			<br>
             
 			<table class="table table-bordered">
-				<thead style="text-align: center">
+				<thead style="vertical-align: middle;text-align: center; background-color: #2596be; color: white">
 					<tr>
-						<th>Action</th>
-						<th>Customer Code</th>
-						<th>Account</th>
-						<th>Type</th>
-						<th>Receive/Payment</th>
-						<th>Bank Code</th>
-						<th>Bank Branch Code</th>
-						<th>Bank Account No.</th>
-						<th>Effect Date</th>
-						<th>Expire Date</th>
-						<th></th>
+			            <th style="width: 8%">Action</th>
+			            <th style="width: 8%">Customer Code</th>
+			            <th style="width: 8%">Account</th>
+			            <th style="width: 8%">Type</th>
+			            <th style="width: 8%">Receive/ Payment</th>
+			            <th style="wid9h: 8%">Bank Code</th>
+			            <th style="width: 8%">Bank Branch Code</th>
+			            <th style="width: 8%">Bank Account No.</th>
+			            <th style="width: 10%">Effect Date</th>
+			            <th style="width: 10%">Expire Date</th>
+						<th style="width: 15%"></th>
 					</tr>
 				</thead>
 				<tbody>
 					<c:forEach var="AccPayment" items="${listAccPayment}">
-
-						<tr>
+						<tr data-custcode="${AccPayment.custcode}" data-account="${AccPayment.account}" data-transtype="${AccPayment.transtype}" data-rptype="${AccPayment.rptype}" onclick="goToEditPage(this)">
 							<td><c:out value="${AccPayment.cardid}" /></td>
 							<td><c:out value="${AccPayment.custcode}" /></td>
 							<td><c:out value="${AccPayment.account}" /></td>
@@ -141,14 +124,25 @@
 							<td class="text-center">
 							    <a href="edit?custcode=<c:out value='${AccPayment.custcode}' />&account=<c:out value='${AccPayment.account}'/>&transtype=<c:out value='${AccPayment.transtype}' />&rptype=<c:out value='${AccPayment.rptype}' />">Edit</a>
 							    &nbsp;&nbsp;&nbsp;&nbsp;
-							    <a href="delete?accountno=<c:out value='${AccPayment.custcode}' />'">Delete</a>
+							    <a href="delete?accountno=<c:out value='${AccPayment.custcode}' />">Delete</a>
 							</td>
 						</tr>
 					</c:forEach>
 				</tbody>
-
 			</table>
 		</div>
 	</div>
+
+<script>
+    function goToEditPage(row) {
+        var custcode = row.getAttribute('custcode');
+        var account = row.getAttribute('account');
+        var transtype = row.getAttribute('transtype');
+        var rptype = row.getAttribute('rptype');
+        var url = `edit?custcode=${custcode}&account=${account}&transtype=${transtype}&rptype=${rptype}`;
+        window.location.href = url;
+    }
+</script>
+
 </body>
 </html>
