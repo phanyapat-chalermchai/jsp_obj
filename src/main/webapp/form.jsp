@@ -18,7 +18,7 @@
 		<nav class="navbar navbar-expand-md navbar-dark"
 			style="background-color: grey">
 			<div>
-				<a class="navbar-brand"> Credit Management App </a>
+				<a class="navbar-brand"> Management App </a>
 			</div>
 
 			<ul class="navbar-nav">
@@ -146,33 +146,46 @@
 				
 				
 				
-				<c:if test="${accPayment != null && accPayment.getEnddate() != null}">
-				    <%
-				   	 	AccPayment accPayment = (AccPayment) request.getAttribute("accPayment");
-				        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-				        String formattedEndDate = null;
-				        if (accPayment != null && accPayment.getEnddate() != null){
-				            formattedEndDate = sdf.format(accPayment.getEnddate());
-				    %>
-				    <fieldset class="form-group">
-				        <label>Effect Date</label> 
-				        <input type="date" value="<%=formattedEndDate%>" class="form-control" name="effectdate">
-				    </fieldset>
-				    <%
-				        }
-				    %>
-				</c:if>
-				<c:if test="${accPayment == null || accPayment.getEnddate() == null}">
-				    <fieldset class="form-group">
-				        <label>End Date</label> 
-				        <input type="date" class="form-control" name="effectdate" maxlength="4">
-				    </fieldset>
-				</c:if>
-				
-				
-
-				<button type="submit" class="btn btn-success">Save</button>
-				</form>
+			<% 
+			    AccPayment accPayment = (AccPayment) request.getAttribute("accPayment");
+			    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			    String formattedEndDate = null;
+			    if (accPayment != null && accPayment.getEnddate() != null) {
+			        formattedEndDate = sdf.format(accPayment.getEnddate());
+			    }
+			%>
+			
+			<c:if test="${accPayment != null && accPayment.getEnddate() != null}">
+			    <fieldset class="form-group date">
+			        <label>Effect Date</label> 
+			        <input type="date" value="<%=formattedEndDate%>" class="form-control" name="effectdate">
+			    </fieldset>
+			</c:if>
+			<c:if test="${accPayment == null || accPayment.getEnddate() == null}">
+			    <fieldset class="form-group date">
+			        <label>End Date</label> 
+			        <input type="date" class="form-control" name="effectdate" maxlength="4">
+			    </fieldset>
+			</c:if>
+			
+			<br/>
+			
+			<button type="submit" class="btn btn-success">Save</button>
+			</form>
+			
+			<!-- Make sure you have included the necessary CSS and JS files for the datepicker -->
+			<link rel="stylesheet" href="path/to/datepicker.css">
+			<script src="path/to/jquery.js"></script>
+			<script src="path/to/datepicker.js"></script>
+			
+			<script type="text/javascript">
+			   $('.form-group.date').datepicker({
+			       todayBtn: "linked",
+			       autoclose: true,
+			       todayHighlight: true,
+			       format: 'dd/mm/yyyy'
+			   });
+			</script>
 
 			</div>
 		</div>

@@ -20,14 +20,18 @@ public class Fcte011DAO {
     // JDBC driver class name
     private static final String JDBC_DRIVER = "com.informix.jdbc.IfxDriver";
 
-    private static final String INSERT_FCTE011_SQL = "INSERT INTO accPayment (accountno, transtype, effectdate, amount, remark) VALUES (?, ?, ?, ?, ?)";
-    private static final String SELECT_FCTE011_BY_ID = "SELECT * FROM taccpayment WHERE custcode = ? and account = ? and transtype = ? and rptype = ?";
-//    private static final String SELECT_ALL_FCTE011 = "SELECT * FROM accPayment";
-    private static final String SELECT_ALL_FCTE011 = "SELECT FIRST 5 * FROM taccpayment";
+    private static final String INSERT_FCTE011_SQL = "INSERT INTO taccpayment (cardid, custacct, custcode, account, transtype, rptype, bankcheqcode, bankcode, bankbranchcode, "
+    		+ "bankaccno, bankacctype, bankcheqcodeextra, paytype, crosstype, effdate, enddate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    
+    private static final String SELECT_FCTE011_BY_ID = "SELECT * FROM taccpayment WHERE cardid = ? and custcode = ? and account = ? and transtype = ? and rptype = ?";
+    
+    private static final String SELECT_ALL_FCTE011 = "SELECT FIRST 10 * FROM taccpayment";
 	
-    private static final String DELETE_FCTE011_SQL = "DELETE FROM taccpayment WHERE custcode = ? and account = ? and transtype = ? and rptype = ?";
-    private static final String UPDATE_FCTE011_SQL = "UPDATE accPayment SET transtype = ?, effectdate = ?, amount = ?, remark = ? WHERE accountno = ?";
+    private static final String DELETE_FCTE011_SQL = "DELETE FROM taccpayment WHERE cardid = ? and custcode = ? and account = ? and transtype = ? and rptype = ?";
+    
+    private static final String UPDATE_FCTE011_SQL = "UPDATE taccpayment SET transtype = ?, effectdate = ?, amount = ?, remark = ? WHERE accountno = ?";
 
+    
     public Fcte011DAO() {
     }
 
@@ -49,13 +53,13 @@ public class Fcte011DAO {
     }
 
     // Select all accPayments
-    public List<AccPayment> selectAllAccPayments() {
+    public List<AccPayment> seachListAccPayment(String appId, String custCode, String custName, String marketingId, 
+    		String channel, String cardId, String fullName, String branch) {
     	System.out.println(SELECT_ALL_FCTE011);
         
         List<AccPayment> accPayments = new ArrayList<>();
         try (Connection connection = getConnection();
         	PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ALL_FCTE011)) {
-	        	System.out.println(SELECT_ALL_FCTE011);
         		ResultSet rs = preparedStatement.executeQuery();
 	          	while (rs.next()) {
 	                String cardid = rs.getString("cardid");
@@ -82,40 +86,6 @@ public class Fcte011DAO {
         	printSQLException(e);
         }
         return accPayments;
-    }
-
-
-    
-    // Handle SQL exceptions
-    private void printSQLException(SQLException ex) {
-        for (Throwable e : ex) {
-            if (e instanceof SQLException) {
-                e.printStackTrace(System.err);
-                System.err.println("SQLState: " + ((SQLException) e).getSQLState());
-                System.err.println("Error Code: " + ((SQLException) e).getErrorCode());
-                System.err.println("Message: " + e.getMessage());
-                Throwable t = ex.getCause();
-                while (t != null) {
-                    System.out.println("Cause: " + t);
-                    t = t.getCause();
-                }
-            }
-        }
-    }
-
-    public void insertAccPayment(AccPayment accPayment) throws SQLException {
-        try (Connection connection = getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(INSERT_FCTE011_SQL)) {
-
-//            preparedStatement.setString(1, newAccountNo);
-//            preparedStatement.setString(2, accPayment.getTranstype());
-//            preparedStatement.setDate(3, accPayment.getEffectdate());
-//            preparedStatement.setBigDecimal(4, accPayment.getAmount());
-//            preparedStatement.setString(5, accPayment.getRemark());
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            printSQLException(e);
-        }
     }
 
     public AccPayment selectAccPayment(String inputCustcode,String inputAccount, String inputTranstype, String inputRptype) {
@@ -161,6 +131,21 @@ public class Fcte011DAO {
         return accPayment;
     }
 
+    public void insertAccPayment(AccPayment accPayment) throws SQLException {
+        try (Connection connection = getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(INSERT_FCTE011_SQL)) {
+
+//            preparedStatement.setString(1, newAccountNo);
+//            preparedStatement.setString(2, accPayment.getTranstype());
+//            preparedStatement.setDate(3, accPayment.getEffectdate());
+//            preparedStatement.setBigDecimal(4, accPayment.getAmount());
+//            preparedStatement.setString(5, accPayment.getRemark());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            printSQLException(e);
+        }
+    }
+
     public boolean deleteAccPayment(String accountno) {
         boolean rowDeleted = false;
         try (Connection connection = getConnection();
@@ -196,19 +181,19 @@ public class Fcte011DAO {
         return sql;
     }
 
-//    private void printSQLException(SQLException ex) {
-//        for (Throwable e : ex) {
-//            if (e instanceof SQLException) {
-//                e.printStackTrace(System.err);
-//                System.err.println("SQLState: " + ((SQLException) e).getSQLState());
-//                System.err.println("Error Code: " + ((SQLException) e).getErrorCode());
-//                System.err.println("Message: " + e.getMessage());
-//                Throwable t = ex.getCause();
-//                while (t != null) {
-//                    System.out.println("Cause: " + t);
-//                    t = t.getCause();
-//                }
-//            }
-//        }
-//    }
+    private void printSQLException(SQLException ex) {
+        for (Throwable e : ex) {
+            if (e instanceof SQLException) {
+                e.printStackTrace(System.err);
+                System.err.println("SQLState: " + ((SQLException) e).getSQLState());
+                System.err.println("Error Code: " + ((SQLException) e).getErrorCode());
+                System.err.println("Message: " + e.getMessage());
+                Throwable t = ex.getCause();
+                while (t != null) {
+                    System.out.println("Cause: " + t);
+                    t = t.getCause();
+                }
+            }
+        }
+    }
 }

@@ -66,8 +66,18 @@ public class Fcte011Controller extends HttpServlet {
 
     private void listAccPayment(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException {
-        System.out.println("goin listAccPayment 314");
-        List<AccPayment> listAccPayment = accPaymentDAO.selectAllAccPayments();
+    	
+        String appId = getNonNullString(request, "appId");
+        String custCode = getNonNullString(request, "custId");
+        String custName = getNonNullString(request, "custName");
+        String marketingId = getNonNullString(request, "marketingId");
+        String channel = getNonNullString(request, "channel");
+        String cardId = getNonNullString(request, "cardId");
+        String fullName = getNonNullString(request, "fullName");
+        String branch = getNonNullString(request, "branch");
+        
+        List<AccPayment> listAccPayment = accPaymentDAO.seachListAccPayment(appId, custCode, custName,
+        		marketingId, channel, cardId, fullName, branch);
         request.setAttribute("listAccPayment", listAccPayment);
         RequestDispatcher dispatcher = request.getRequestDispatcher("list.jsp");
         dispatcher.forward(request, response);
