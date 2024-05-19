@@ -40,7 +40,7 @@
                         <div class="form-group row">
                             <label for="custName" class="col-sm-4 col-form-label text-right">Customer Name :</label>
                             <div class="col-sm-6">
-                                <input type="text" class="form-control" id="custName" name="custName" placeholder="Customer Name" value="${param.custName}">
+                                <input type="text" class="form-control" id="custNameEN" name="custNameEN" placeholder="Customer Name" value="${param.custName}">
                             </div>
                         </div>
                         <div class="form-group row">
@@ -67,7 +67,7 @@
                         <div class="form-group row">
                             <label for="fullName" class="col-sm-4 col-form-label text-right">ชื่อ - นามสกุล :</label>
                             <div class="col-sm-8">
-                                <input type="text" class="form-control" id="fullName" name="fullName" placeholder="ชื่อ - นามสกุล" value="${param.fullName}">
+                                <input type="text" class="form-control" id="custNameTH" name="custNameTH" placeholder="ชื่อ - นามสกุล" value="${param.fullName}">
                             </div>
                         </div>
                         <div class="form-group row">
@@ -93,53 +93,63 @@
 			<br>
             
 			<table class="table table-bordered">
-    <thead style="vertical-align: middle;text-align: center; background-color: #2596be; color: white">
-        <tr>
-            <th style="width: 8%">Action</th>
-            <th style="width: 8%">Customer Code</th>
-            <th style="width: 8%">Account</th>
-            <th style="width: 8%">Type</th>
-            <th style="width: 8%">Receive/ Payment</th>
-            <th style="wid9h: 8%">Bank Code</th>
-            <th style="width: 8%">Bank Branch Code</th>
-            <th style="width: 8%">Bank Account No.</th>
-            <th style="width: 10%">Effect Date</th>
-            <th style="width: 10%">Expire Date</th>
-            <th style="width: 15%"></th>
-        </tr>
-    </thead>
-    <tbody>
-        <c:choose>
-            <c:when test="${empty listAccPayment}">
-			    <tr>
-			        <td colspan="11" class="text-center no-hover" style="padding: 50px 0;">No Data</td>
-			    </tr>
-            </c:when>
-            <c:otherwise>
-                <c:forEach var="AccPayment" items="${listAccPayment}">
-                    <tr class="edit-row" data-custcode="${AccPayment.custcode}" data-account="${AccPayment.account}" data-transtype="${AccPayment.transtype}" data-rptype="${AccPayment.rptype}" 
-                    onclick="window.location.href = 'edit?custcode=' + this.getAttribute('data-custcode') + '&account=' + this.getAttribute('data-account') + '&transtype=' + this.getAttribute('data-transtype') + '&rptype=' + this.getAttribute('data-rptype');">
-                        <td><c:out value="${AccPayment.cardid}" /></td>
-                        <td><c:out value="${AccPayment.custcode}" /></td>
-                        <td><c:out value="${AccPayment.account}" /></td>
-                        <td><c:out value="${AccPayment.transtype}" /></td>
-                        <td><c:out value="${AccPayment.rptype}" /></td>
-                        <td><c:out value="${AccPayment.bankcode}" /></td>
-                        <td><c:out value="${AccPayment.bankbranchcode}" /></td>
-                        <td><c:out value="${AccPayment.bankaccno}" /></td>
-                        <td><c:out value="${AccPayment.effdate}" /></td>
-                        <td><c:out value="${AccPayment.enddate}" /></td>
-                        <td class="text-center">
-                            <a href="edit?custcode=<c:out value='${AccPayment.custcode}' />&account=<c:out value='${AccPayment.account}'/>&transtype=<c:out value='${AccPayment.transtype}' />&rptype=<c:out value='${AccPayment.rptype}' />">Edit</a>
-                            &nbsp;&nbsp;&nbsp;&nbsp;
-                            <a href="delete?custcode=<c:out value='${AccPayment.custcode}' />&account=<c:out value='${AccPayment.account}'/>&transtype=<c:out value='${AccPayment.transtype}' />&rptype=<c:out value='${AccPayment.rptype}' />">Delete</a>
-                        </td>
-                    </tr>
-                </c:forEach>
-            </c:otherwise>
-        </c:choose>
-    </tbody>
-</table>
+			    <thead style="vertical-align: middle;text-align: center; background-color: #2596be; color: white">
+			        <tr>
+			            <th style="width: 8%">Action</th>
+			            <th style="width: 8%">Customer Code</th>
+			            <th style="width: 8%">Account</th>
+			            <th style="width: 8%">Type</th>
+			            <th style="width: 8%">Receive/ Payment</th>
+			            <th style="wid9h: 8%">Bank Code</th>
+			            <th style="width: 8%">Bank Branch Code</th>
+			            <th style="width: 8%">Bank Account No.</th>
+			            <th style="width: 10%">Effect Date</th>
+			            <th style="width: 10%">Expire Date</th>
+			            <th style="width: 15%"></th>
+			        </tr>
+			    </thead>
+			    <tbody>
+			        <c:choose>
+			            <c:when test="${empty listAccPayment}">
+						    <tr>
+						        <td colspan="11" class="text-center no-hover" style="padding: 50px 0;">No Data</td>
+						    </tr>
+			            </c:when>
+			            <c:otherwise>
+			                <c:forEach var="AccPayment" items="${listAccPayment}">
+			                    <tr class="edit-row" data-cardid="${AccPayment.cardid}" data-custcode="${AccPayment.custcode}" data-account="${AccPayment.account}" data-transtype="${AccPayment.transtype}" data-rptype="${AccPayment.rptype}" 
+			                    onclick="window.location.href = 'edit?cardid=' + this.getAttribute('data-cardid') + '&custcode=' + this.getAttribute('data-custcode') + '&account=' + this.getAttribute('data-account') + '&transtype=' + this.getAttribute('data-transtype') + '&rptype=' + this.getAttribute('data-rptype');">
+			                        <td><c:out value="${AccPayment.cardid}" /></td>
+			                        <td><c:out value="${AccPayment.custcode}" /></td>
+			                        <td><c:out value="${AccPayment.account}" /></td>
+			                        <td><c:out value="${AccPayment.transtype}" /></td>
+			                        <td><c:out value="${AccPayment.rptype}" /></td>
+			                        <td><c:out value="${AccPayment.bankcode}" /></td>
+			                        <td><c:out value="${AccPayment.bankbranchcode}" /></td>
+			                        <td><c:out value="${AccPayment.bankaccno}" /></td>
+			                        <td><c:out value="${AccPayment.effdate}" /></td>
+			                        <td><c:out value="${AccPayment.enddate}" /></td>
+			                        <td class="text-center">
+			                            <a href="edit?cardid=<c:out value='${AccPayment.cardid}' />&custcode=<c:out value='${AccPayment.custcode}' />&account=<c:out value='${AccPayment.account}'/>&transtype=<c:out value='${AccPayment.transtype}' />&rptype=<c:out value='${AccPayment.rptype}' />">Edit</a>
+			                            &nbsp;&nbsp;&nbsp;&nbsp;
+			                            <a href="delete?cardid=<c:out value='${AccPayment.cardid}' />&custcode=<c:out value='${AccPayment.custcode}' />&account=<c:out value='${AccPayment.account}'/>&transtype=<c:out value='${AccPayment.transtype}' />&rptype=<c:out value='${AccPayment.rptype}' />">Delete</a>
+			                        </td>
+			                    </tr>
+			                </c:forEach>
+			            </c:otherwise>
+			        </c:choose>
+			    </tbody>
+			</table>
+			<!-- Pagination Controls -->
+			<div class="pagination">
+			    <c:if test="${currentPage > 1}">
+			        <a href="<%=request.getContextPath()%>/list?page=${currentPage-1}&appId=${appIdParam}&custId=${custIdParam}&custNameEN=${custNameENParam}&marketingId=${marketingIdParam}&channel=${channelParam}&cardId=${cardIdParam}&custNameTH=${custNameTHParam}&branch=${branchParam}">Previous</a>
+			    </c:if>
+			    <span id="currentPage">Page ${currentPage}</span>
+			    <c:if test="${currentPage < totalPages}">
+			        <a href="<%=request.getContextPath()%>/list?page=${currentPage+1}&appId=${appIdParam}&custId=${custIdParam}&custNameEN=${custNameENParam}&marketingId=${marketingIdParam}&channel=${channelParam}&cardId=${cardIdParam}&custNameTH=${custNameTHParam}&branch=${branchParam}">Next</a>
+			    </c:if>
+			</div>
 
 		</div>
 	</div>

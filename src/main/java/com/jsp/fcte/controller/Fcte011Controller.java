@@ -83,16 +83,36 @@ public class Fcte011Controller extends HttpServlet {
     	
         String appId = request.getParameter("appId");
         String custCode = request.getParameter("custId");
-        String custName = request.getParameter("custName");
+        String custNameEN = request.getParameter("custNameEN");
         String marketingId = request.getParameter("marketingId");
         String channel = request.getParameter("channel");
         String cardId = request.getParameter("cardId");
-        String fullName = request.getParameter("fullName");
+        String custNameTH = request.getParameter("custNameTH");
         String branch = request.getParameter("branch");
         
-        List<AccPayment> listAccPayment = accPaymentDAO.searchListAccPayment(appId, custCode, custName,
-        		marketingId, channel, cardId, fullName, branch);
+        List<AccPayment> listAccPayment = accPaymentDAO.searchListAccPayment(appId, custCode, custNameEN,
+        		marketingId, channel, cardId, custNameTH, branch);
         request.setAttribute("listAccPayment", listAccPayment);
+        
+        request.setAttribute("appIdParam", appId);
+        request.setAttribute("custIdParam", custCode);
+        request.setAttribute("custNameENParam", custNameEN);
+        request.setAttribute("marketingIdParam", marketingId);
+        request.setAttribute("channelParam", channel);
+        request.setAttribute("cardIdParam", cardId);
+        request.setAttribute("custNameTHParam", custNameTH);
+        request.setAttribute("branchParam", branch);
+        
+        int pageNumber = request.getParameter("page") != null ? Integer.parseInt(request.getParameter("page")) : 1;
+        int itemsPerPage = 10; // Change this value as per your requirement
+
+
+        request.setAttribute("pageNumber", pageNumber);
+        request.setAttribute("itemsPerPage", itemsPerPage);
+        request.setAttribute("itemsPerPage", itemsPerPage);
+        
+        
+        
         RequestDispatcher dispatcher = request.getRequestDispatcher("list.jsp");
         dispatcher.forward(request, response);
     }
@@ -106,11 +126,12 @@ public class Fcte011Controller extends HttpServlet {
     private void showEditForm(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, ServletException, IOException {
         System.out.println("goin showEditForm");
+        String cardid = request.getParameter("cardid");
         String custcode = request.getParameter("custcode");
         String account = request.getParameter("account");
         String transtype = request.getParameter("transtype");
         String rptype = request.getParameter("rptype");
-        AccPayment existingAccPayment = accPaymentDAO.selectAccPayment(custcode, account, transtype, rptype);
+        AccPayment existingAccPayment = accPaymentDAO.selectAccPayment(cardid, custcode, account, transtype, rptype);
         RequestDispatcher dispatcher = request.getRequestDispatcher("form.jsp");
         request.setAttribute("accPayment", existingAccPayment);
         dispatcher.forward(request, response);
@@ -194,7 +215,7 @@ public class Fcte011Controller extends HttpServlet {
                 enddate);
         
         // Update the accPayment in the database using accPaymentDAO
-//        accPaymentDAO.updateAccPayment(accPayment);
+        accPaymentDAO.updateAccPayment(accPayment);
         
         // Redirect the user to the list page
         response.sendRedirect("searchList?custid="+ custcode);
@@ -202,11 +223,12 @@ public class Fcte011Controller extends HttpServlet {
 
     private void deleteAccPayment(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException {
+        String cardId = request.getParameter("cardid");
         String custcode = request.getParameter("custcode");
         String account = request.getParameter("account");
         String transtype = request.getParameter("transtype");
         String rptype = request.getParameter("rptype");
-        accPaymentDAO.deleteAccPayment(custcode, account, transtype, rptype);
+        accPaymentDAO.deleteAccPayment(cardId, custcode, account, transtype, rptype);
         response.sendRedirect("searchList?custid="+ custcode);
     }
 
