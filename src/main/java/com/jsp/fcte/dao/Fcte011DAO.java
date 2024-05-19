@@ -30,7 +30,7 @@ public class Fcte011DAO {
     private static final String UPDATE_FCTE011_SQL = "UPDATE taccpayment SET transtype = ?, effectdate = ?, amount = ?, remark = ? "
     		+ "WHERE custcode = ? and account = ? and transtype = ? and rptype = ?";
 	
-    private static final String DELETE_FCTE011_SQL = "DELETE FIRST 1 FROM taccpayment WHERE custcode = ? and account = ? and transtype = ? and rptype = ?";
+    private static final String DELETE_FCTE011_SQL = "DELETE FROM taccpayment WHERE custcode = ? and account = ? and transtype = ? and rptype = ?";
 
     
     public Fcte011DAO() {
@@ -104,6 +104,7 @@ public class Fcte011DAO {
 	                accPayments.add(new AccPayment(cardid, custacct, custcode, account, transtype, rptype, bankcheqcode, bankcode,
                             bankbranchcode, bankaccno, bankacctype, bankcheqcodeextra, paytype, crosstype,
                             effdate, enddate));
+		        	System.out.println(preparedStatement.toString());
 	          	}
         } catch (SQLException e) {
         	printSQLException(e);
@@ -142,6 +143,8 @@ public class Fcte011DAO {
 	                String crosstype = rs.getString("crosstype");
 	                Date effdate = rs.getDate("effdate");
 	                Date enddate = rs.getDate("enddate");
+	                
+		        	System.out.println(rptype);
 	
 	                accPayment = new AccPayment(cardid, custacct, custcode, account, transtype, rptype, bankcheqcode, bankcode,
 	                        bankbranchcode, bankaccno, bankacctype, bankcheqcodeextra, paytype, crosstype,
@@ -195,6 +198,7 @@ public class Fcte011DAO {
 	            preparedStatement.setString(14, accPayment.getCrosstype());
 	            preparedStatement.setDate(15, accPayment.getEffdate());
 	            preparedStatement.setDate(16, accPayment.getEnddate());
+	        	System.out.println(preparedStatement.toString());
 	            rowUpdated = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
             printSQLException(e);
@@ -215,6 +219,7 @@ public class Fcte011DAO {
 	            preparedStatement.setString(2, inputAccount);
 	            preparedStatement.setString(3, inputTranstype);
 	            preparedStatement.setString(4, inputRptype);
+	        	System.out.println(preparedStatement.toString());
 	            rowDeleted = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
             printSQLException(e);

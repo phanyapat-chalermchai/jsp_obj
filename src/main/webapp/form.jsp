@@ -66,55 +66,55 @@
 				
                 <fieldset class="form-group">
                     <label>Card ID</label> 
-                    <input type="text" class="form-control" name="cardid" value="<c:out value='${accPayment.cardid}' />" <c:if test="${accPayment != null}">disabled</c:if>>
+                    <input maxlength="20" type="text" class="form-control" name="cardid" value="<c:out value='${accPayment.cardid}' />" <c:if test="${accPayment != null}">disabled</c:if>>
                 </fieldset>
 				
                 <fieldset class="form-group">
                     <label>Customer Account</label> 
-                    <input type="text" class="form-control" name="custacct" value="<c:out value='${accPayment.custacct}' />" <c:if test="${accPayment != null}">disabled</c:if>>
+                    <input maxlength="1" type="text" class="form-control" name="custacct" value="<c:out value='${accPayment.custacct}' />" <c:if test="${accPayment != null}">disabled</c:if>>
                 </fieldset>
                 
                 <fieldset class="form-group">
                     <label>Customer Code</label> 
-                    <input type="text" class="form-control" name="custcode" value="<c:out value='${accPayment.custcode}' />" <c:if test="${accPayment != null}">disabled</c:if>>
+                    <input maxlength="8" type="text" class="form-control" name="custcode" value="<c:out value='${accPayment.custcode}' />" <c:if test="${accPayment != null}">disabled</c:if>>
                 </fieldset>
 
                 <fieldset class="form-group">
                     <label>Account</label> 
-                    <input type="text" class="form-control" name="account" value="<c:out value='${accPayment.account}' />" <c:if test="${accPayment != null}">disabled</c:if>>
+                    <input maxlength="15" type="text" class="form-control" name="account" value="<c:out value='${accPayment.account}' />" <c:if test="${accPayment != null}">disabled</c:if>>
                 </fieldset>
 
                 <fieldset class="form-group">
                     <label>Transaction Type</label> 
-                    <input type="text" class="form-control" name="transtype" value="<c:out value='${accPayment.transtype}' />" <c:if test="${accPayment != null}">disabled</c:if>>
+                    <input maxlength="10" type="text" class="form-control" name="transtype" value="<c:out value='${accPayment.transtype}' />" <c:if test="${accPayment != null}">disabled</c:if>>
                 </fieldset>
                 
 				<fieldset class="form-group">
 				    <label>RP Type</label> 
 				    <select class="form-control" name="rptype" <c:if test="${accPayment != null}">disabled</c:if>>
-				        <option value="R" <c:if test="${accPayment.rptype == 'R'}">selected</c:if>>Revieve</option>
-				        <option value="P" <c:if test="${accPayment.rptype == 'P'}">selected</c:if>>Payment</option>
+				        <option value="R" <c:if test="${accPayment.rptype == 'R '}">selected</c:if>>Receive</option>
+				        <option value="P" <c:if test="${accPayment.rptype == 'P '}">selected</c:if>>Payment</option>
 				    </select>
 				</fieldset>
 
                 <fieldset class="form-group">
                     <label>Bank Cheque Code</label> 
-                    <input type="text" class="form-control" name="bankcheqcode" value="<c:out value='${accPayment.bankcheqcode}' />">
+                    <input maxlength="2" type="text" class="form-control" name="bankcheqcode" value="<c:out value='${accPayment.bankcheqcode}' />">
                 </fieldset>
                 
                 <fieldset class="form-group">
                     <label>Bank Code</label> 
-                    <input type="text" class="form-control" name="bankcode" value="<c:out value='${accPayment.bankcode}' />">
+                    <input maxlength="5" type="text" class="form-control" name="bankcode" value="<c:out value='${accPayment.bankcode}' />">
                 </fieldset>
 
                 <fieldset class="form-group">
                     <label>Bank Branch Code</label> 
-                    <input type="text" class="form-control" name="bankbranchcode" value="<c:out value='${accPayment.bankbranchcode}' />">
+                    <input maxlength="5" type="text" class="form-control" name="bankbranchcode" value="<c:out value='${accPayment.bankbranchcode}' />">
                 </fieldset>
 
                 <fieldset class="form-group">
                     <label>Bank Account Number</label> 
-                    <input type="text" class="form-control" name="bankaccno" value="<c:out value='${accPayment.bankaccno}' />">
+                    <input maxlength="20" type="text" class="form-control" name="bankaccno" value="<c:out value='${accPayment.bankaccno}' />">
                 </fieldset>
 
 
@@ -129,17 +129,17 @@
 
                 <fieldset class="form-group">
                     <label>Bank Cheque Code Extra</label> 
-                    <input type="text" class="form-control" name="bankcheqcodeextra" value="<c:out value='${accPayment.bankcheqcodeextra}' />">
+                    <input maxlength="2" type="text" class="form-control" name="bankcheqcodeextra" value="<c:out value='${accPayment.bankcheqcodeextra}' />">
                 </fieldset>
 
                 <fieldset class="form-group">
                     <label>Payment Type</label> 
-                    <input type="text" class="form-control" name="paytype" value="<c:out value='${accPayment.paytype}' />">
+                    <input maxlength="2" type="text" class="form-control" name="paytype" value="<c:out value='${accPayment.paytype}' />">
                 </fieldset>
 
                 <fieldset class="form-group">
                     <label>Cross Type</label> 
-                    <input type="text" class="form-control" name="crosstype" value="<c:out value='${accPayment.crosstype}' />">
+                    <input maxlength="1" type="text" class="form-control" name="crosstype" value="<c:out value='${accPayment.crosstype}' />">
                 </fieldset>
 				
 				
@@ -147,13 +147,13 @@
 				<c:if test="${accPayment != null && accPayment.getEffdate() != null}">
 				    <fieldset class="form-group">
 				        <label>Effect Date</label> 
-				        <input type="date" value="<%=formattedEffectDate%>" class="form-control" name="effectdate">
+				        <input maxlength="1" type="date" value="<%=formattedEffectDate%>" class="form-control" name="effectdate">
 				    </fieldset>
 				</c:if>
 				<c:if test="${accPayment == null || accPayment.getEffdate() == null}">
 				    <fieldset class="form-group">
 				        <label>Effect Date</label> 
-				        <input type="date" class="form-control" name="effectdate" maxlength="4">
+				        <input maxlength="1" type="date" class="form-control" name="effectdate" maxlength="4">
 				    </fieldset>
 				</c:if>
 				
@@ -162,13 +162,13 @@
 				<c:if test="${accPayment != null && accPayment.getEnddate() != null}">
 				    <fieldset class="form-group date">
 				        <label>Effect Date</label> 
-				        <input type="date" value="<%=formattedEndDate%>" class="form-control" name="enddate">
+				        <input maxlength="1" type="date" value="<%=formattedEndDate%>" class="form-control" name="enddate">
 				    </fieldset>
 				</c:if>
 				<c:if test="${accPayment == null || accPayment.getEnddate() == null}">
 				    <fieldset class="form-group date">
 				        <label>End Date</label> 
-				        <input type="date" class="form-control" name="enddate" maxlength="4">
+				        <input maxlength="1" type="date" class="form-control" name="enddate">
 				    </fieldset>
 				</c:if>
 				

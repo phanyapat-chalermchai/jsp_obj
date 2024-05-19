@@ -155,7 +155,7 @@ public class Fcte011Controller extends HttpServlet {
         accPaymentDAO.insertAccPayment(newAccPayment);
         
         // Redirect the user to the list page
-        response.sendRedirect("searchList?custcode="+ custcode);
+        response.sendRedirect("searchList?custid="+ custcode);
     }
 
     private void updateAccPayment(HttpServletRequest request, HttpServletResponse response)
@@ -194,10 +194,10 @@ public class Fcte011Controller extends HttpServlet {
                 enddate);
         
         // Update the accPayment in the database using accPaymentDAO
-        accPaymentDAO.updateAccPayment(accPayment);
+//        accPaymentDAO.updateAccPayment(accPayment);
         
         // Redirect the user to the list page
-        response.sendRedirect("searchList?custcode="+ custcode);
+        response.sendRedirect("searchList?custid="+ custcode);
     }
 
     private void deleteAccPayment(HttpServletRequest request, HttpServletResponse response)
@@ -207,7 +207,7 @@ public class Fcte011Controller extends HttpServlet {
         String transtype = request.getParameter("transtype");
         String rptype = request.getParameter("rptype");
         accPaymentDAO.deleteAccPayment(custcode, account, transtype, rptype);
-        response.sendRedirect("list");
+        response.sendRedirect("searchList?custid="+ custcode);
     }
 
 }

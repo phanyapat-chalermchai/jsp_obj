@@ -93,56 +93,72 @@
 			<br>
             
 			<table class="table table-bordered">
-				<thead style="vertical-align: middle;text-align: center; background-color: #2596be; color: white">
-					<tr>
-			            <th style="width: 8%">Action</th>
-			            <th style="width: 8%">Customer Code</th>
-			            <th style="width: 8%">Account</th>
-			            <th style="width: 8%">Type</th>
-			            <th style="width: 8%">Receive/ Payment</th>
-			            <th style="wid9h: 8%">Bank Code</th>
-			            <th style="width: 8%">Bank Branch Code</th>
-			            <th style="width: 8%">Bank Account No.</th>
-			            <th style="width: 10%">Effect Date</th>
-			            <th style="width: 10%">Expire Date</th>
-						<th style="width: 15%"></th>
-					</tr>
-				</thead>
-				<tbody>
-					<c:forEach var="AccPayment" items="${listAccPayment}">
-						<tr data-custcode="${AccPayment.custcode}" data-account="${AccPayment.account}" data-transtype="${AccPayment.transtype}" data-rptype="${AccPayment.rptype}" onclick="goToEditPage(this)">
-							<td><c:out value="${AccPayment.cardid}" /></td>
-							<td><c:out value="${AccPayment.custcode}" /></td>
-							<td><c:out value="${AccPayment.account}" /></td>
-							<td><c:out value="${AccPayment.transtype}" /></td>
-							<td><c:out value="${AccPayment.rptype}" /></td>
-							<td><c:out value="${AccPayment.bankcode}" /></td>
-							<td><c:out value="${AccPayment.bankbranchcode}" /></td>
-							<td><c:out value="${AccPayment.bankaccno}" /></td>
-							<td><c:out value="${AccPayment.effdate}" /></td>
-							<td><c:out value="${AccPayment.enddate}" /></td>
-							<td class="text-center">
-							    <a href="edit?custcode=<c:out value='${AccPayment.custcode}' />&account=<c:out value='${AccPayment.account}'/>&transtype=<c:out value='${AccPayment.transtype}' />&rptype=<c:out value='${AccPayment.rptype}' />">Edit</a>
-							    &nbsp;&nbsp;&nbsp;&nbsp;
-							    <a href="delete?accountno=<c:out value='${AccPayment.custcode}' />">Delete</a>
-							</td>
-						</tr>
-					</c:forEach>
-				</tbody>
-			</table>
+    <thead style="vertical-align: middle;text-align: center; background-color: #2596be; color: white">
+        <tr>
+            <th style="width: 8%">Action</th>
+            <th style="width: 8%">Customer Code</th>
+            <th style="width: 8%">Account</th>
+            <th style="width: 8%">Type</th>
+            <th style="width: 8%">Receive/ Payment</th>
+            <th style="wid9h: 8%">Bank Code</th>
+            <th style="width: 8%">Bank Branch Code</th>
+            <th style="width: 8%">Bank Account No.</th>
+            <th style="width: 10%">Effect Date</th>
+            <th style="width: 10%">Expire Date</th>
+            <th style="width: 15%"></th>
+        </tr>
+    </thead>
+    <tbody>
+        <c:choose>
+            <c:when test="${empty listAccPayment}">
+			    <tr>
+			        <td colspan="11" class="text-center no-hover" style="padding: 50px 0;">No Data</td>
+			    </tr>
+            </c:when>
+            <c:otherwise>
+                <c:forEach var="AccPayment" items="${listAccPayment}">
+                    <tr class="edit-row" data-custcode="${AccPayment.custcode}" data-account="${AccPayment.account}" data-transtype="${AccPayment.transtype}" data-rptype="${AccPayment.rptype}" 
+                    onclick="window.location.href = 'edit?custcode=' + this.getAttribute('data-custcode') + '&account=' + this.getAttribute('data-account') + '&transtype=' + this.getAttribute('data-transtype') + '&rptype=' + this.getAttribute('data-rptype');">
+                        <td><c:out value="${AccPayment.cardid}" /></td>
+                        <td><c:out value="${AccPayment.custcode}" /></td>
+                        <td><c:out value="${AccPayment.account}" /></td>
+                        <td><c:out value="${AccPayment.transtype}" /></td>
+                        <td><c:out value="${AccPayment.rptype}" /></td>
+                        <td><c:out value="${AccPayment.bankcode}" /></td>
+                        <td><c:out value="${AccPayment.bankbranchcode}" /></td>
+                        <td><c:out value="${AccPayment.bankaccno}" /></td>
+                        <td><c:out value="${AccPayment.effdate}" /></td>
+                        <td><c:out value="${AccPayment.enddate}" /></td>
+                        <td class="text-center">
+                            <a href="edit?custcode=<c:out value='${AccPayment.custcode}' />&account=<c:out value='${AccPayment.account}'/>&transtype=<c:out value='${AccPayment.transtype}' />&rptype=<c:out value='${AccPayment.rptype}' />">Edit</a>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <a href="delete?custcode=<c:out value='${AccPayment.custcode}' />&account=<c:out value='${AccPayment.account}'/>&transtype=<c:out value='${AccPayment.transtype}' />&rptype=<c:out value='${AccPayment.rptype}' />">Delete</a>
+                        </td>
+                    </tr>
+                </c:forEach>
+            </c:otherwise>
+        </c:choose>
+    </tbody>
+</table>
+
 		</div>
 	</div>
 
-<script>
-    function goToEditPage(row) {
-        var custcode = row.getAttribute('custcode');
-        var account = row.getAttribute('account');
-        var transtype = row.getAttribute('transtype');
-        var rptype = row.getAttribute('rptype');
-        var url = `edit?custcode=${custcode}&account=${account}&transtype=${transtype}&rptype=${rptype}`;
-        window.location.href = url;
-    }
-</script>
-
 </body>
 </html>
+
+<!-- Add this JavaScript function to make an AJAX call to fetch updated data -->
+<script>
+    function reloadData() {
+        // Make an AJAX call to fetch updated data
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                // If the request is successful, update the table with the new data
+                document.getElementById("tableBody").innerHTML = xhr.responseText;
+            }
+        };
+        xhr.open("GET", "<%=request.getContextPath()%>/reloadData", true);
+        xhr.send();
+    }
+</script>
