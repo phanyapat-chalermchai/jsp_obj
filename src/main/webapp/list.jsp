@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ page import="com.jsp.fcte.modal.AccPayment" %>
 <html>
 <head>
 <title>FCTE011</title>
@@ -20,7 +21,6 @@
 		<div class="container">
             <br>
 			
-            <!-- Two-Column Search Form with Inline Labels and Inputs -->
             <form id="searchForm" method="get" action="<%=request.getContextPath()%>/searchList" class="form">
                 <div class="form-row" style="text-align: center; align-items:center; justify-content-:center; ">
                     <!-- First Column -->
@@ -32,9 +32,9 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="custId" class="col-sm-4 col-form-label text-right">Customer ID :</label>
+                            <label for="custcode" class="col-sm-4 col-form-label text-right">Customer ID :</label>
                             <div class="col-sm-6">
-                                <input type="text" class="form-control" id="custId" name="custId" placeholder="Customer ID" value="${param.custId}">
+                                <input type="text" class="form-control" id="custcode" name="custcode" placeholder="Customer ID" value="${param.custcode}" step="1" oninput="this.value = this.value.replace(/\D/g, '')">
                             </div>
                         </div>
                         <div class="form-group row">
@@ -46,7 +46,7 @@
                         <div class="form-group row">
                             <label for="marketingId" class="col-sm-4 col-form-label text-right">Marketing ID :</label>
                             <div class="col-sm-6">
-                                <input type="text" class="form-control" id="marketingId" name="marketingId" placeholder="Marketing ID" value="${param.marketingId}">
+                                <input type="text" class="form-control" id="marketingId" name="marketingId" placeholder="Marketing ID" value="${param.marketingId}" step="1" oninput="this.value = this.value.replace(/\D/g, '')">
                             </div>
                         </div>
                     </div>
@@ -55,13 +55,17 @@
                         <div class="form-group row">
                             <label for="channel" class="col-sm-4 col-form-label text-right">Channel :</label>
                             <div class="col-sm-8">
-                                <input type="text" class="form-control" id="channel" name="channel" placeholder="Channel" value="${param.channel}">
+								<select class="form-control" name="channel">
+									<option value="" ${param.channel == '' ? 'selected' : ''}></option>
+									<option value="ONLINE" ${param.channel == 'ONLINE' ? 'selected' : ''}>ONLINE</option>
+									<option value="OFFLINE" ${param.channel == 'OFFLINE' ? 'selected' : ''}>OFFLINE</option>
+								</select>
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="cardId" class="col-sm-4 col-form-label text-right">Card ID :</label>
+                            <label for="cardid" class="col-sm-4 col-form-label text-right">Card ID :</label>
                             <div class="col-sm-8">
-                                <input type="text" class="form-control" id="cardId" name="cardId" placeholder="Card ID" value="${param.cardId}">
+                                <input type="text" class="form-control" id="cardid" name="cardid" placeholder="Card ID" value="${param.cardid}" step="1" oninput="this.value = this.value.replace(/\D/g, '')">
                             </div>
                         </div>
                         <div class="form-group row">
@@ -73,25 +77,39 @@
                         <div class="form-group row">
                             <label for="branch" class="col-sm-4 col-form-label text-right">Branch :</label>
                             <div class="col-sm-8">
-                                <input type="text" class="form-control" id="branch" name="branch" placeholder="Branch" value="${param.branch}">
+                                <input type="text" class="form-control" id="branch" name="branch" placeholder="Branch" value="${param.branch}" step="1" oninput="this.value = this.value.replace(/\D/g, '')">
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="col-md-12 text-right">
-                        <button type="submit" class="btn btn-primary">Search</button>
+                        <button type="submit" class="btn btn-primary mr-3">Search</button>
             			<button type="reset" class="btn btn-secondary" onclick="window.location.href='<%=request.getContextPath()%>/list'">Reset</button>
                     </div>
                 </div>
             </form>
 			<hr>
             
-			<div class="container text-left">
-				<a href="<%=request.getContextPath()%>/new" class="btn btn-success">Add New</a>
+			<div class="container d-flex justify-content-between align-items-center">
+			    <div>
+			        <a href="<%=request.getContextPath()%>/new" class="btn btn-success">Add New</a>
+			    </div>
+			    <div class="d-flex align-items-center">
+			        <label class="mr-2 mb-0">Items per page</label>
+			        <div>
+			            <select class="form-control" name="itemsPerPage"  onchange="changeItemsPerPage(this.value)">
+			                <option value="5" ${param.itemsPerPage == '5' ? 'selected' : ''}>5</option>
+			                <option value="10" ${param.itemsPerPage == '10' ? 'selected' : ''}>10</option>
+			                <option value="25" ${param.itemsPerPage == '25' ? 'selected' : ''}>25</option>
+			                <option value="50" ${param.itemsPerPage == '50' ? 'selected' : ''}>50</option>
+			                <option value="100" ${param.itemsPerPage == '100' ? 'selected' : ''}>100</option>
+			            </select>
+			        </div>
+			    </div>
 			</div>
+
 			<br>
-            
 			<table class="table table-bordered">
 			    <thead style="vertical-align: middle;text-align: center; background-color: #2596be; color: white">
 			        <tr>
@@ -140,15 +158,79 @@
 			        </c:choose>
 			    </tbody>
 			</table>
-			<!-- Pagination Controls -->
-			<div class="pagination">
-			    <c:if test="${currentPage > 1}">
-			        <a href="<%=request.getContextPath()%>/list?page=${currentPage-1}&appId=${appIdParam}&custId=${custIdParam}&custNameEN=${custNameENParam}&marketingId=${marketingIdParam}&channel=${channelParam}&cardId=${cardIdParam}&custNameTH=${custNameTHParam}&branch=${branchParam}">Previous</a>
-			    </c:if>
-			    <span id="currentPage">Page ${currentPage}</span>
-			    <c:if test="${currentPage < totalPages}">
-			        <a href="<%=request.getContextPath()%>/list?page=${currentPage+1}&appId=${appIdParam}&custId=${custIdParam}&custNameEN=${custNameENParam}&marketingId=${marketingIdParam}&channel=${channelParam}&cardId=${cardIdParam}&custNameTH=${custNameTHParam}&branch=${branchParam}">Next</a>
-			    </c:if>
+			<!-- Displaying number of entries and Pagination Controls -->
+			<div class="container">
+			    <div class="row">
+			        <!-- Showing entries on the left -->
+			        <div class="col-md-6">
+			            <p>
+			                <c:set var="endItem" value="${currentPage * itemsPerPage}"/>
+							<c:choose>
+							    <c:when test="${endItem > totalItems}">
+							        <c:set var="endItem" value="${totalItems}"/>
+							    </c:when>
+							</c:choose>
+							<c:if test="${listAccPayment != null && !listAccPayment.isEmpty()}">
+								Showing ${currentPage * itemsPerPage - itemsPerPage + 1}-${endItem} of ${totalItems} Items
+							</c:if>
+			            </p>
+			        </div>
+			        <!-- Pagination Controls on the right -->
+			        <div class="col-md-6 d-flex justify-content-end">
+			            <div class="ml-2">
+			                <!-- Pagination -->
+			                <nav aria-label="Page navigation">
+			                    <ul class="pagination justify-content-center">
+			                        <!-- Pagination Controls -->
+			                        <!-- Previous Page Button -->
+			                        <li class="page-item ${currentPage <= 1 ? 'disabled' : ''}">
+			                            <a class="page-link" href="?currentPage=${currentPage - 1}&itemsPerPage=${itemsPerPage}" aria-label="Previous">
+			                                <span aria-hidden="true">&laquo;</span>
+			                                <span class="sr-only">Previous</span>
+			                            </a>
+			                        </li>
+			
+			                        <!-- Page Numbers -->
+			                        <c:choose>
+			                            <c:when test="${currentPage > 5}">
+			                                <li class="page-item">
+			                                    <a class="page-link" href="?currentPage=1&itemsPerPage=${itemsPerPage}">1</a>
+			                                </li>
+			                                <li class="page-item disabled">
+			                                    <span class="page-link">...</span>
+			                                </li>
+			                            </c:when>
+			                        </c:choose>
+			
+			                        <c:forEach var="i" begin="${currentPage - 4 > 0 ? currentPage - 4 : 1}" end="${currentPage + 5 < totalPages ? currentPage + 5 : totalPages}">
+			                            <li class="page-item ${i == currentPage ? 'active' : ''}">
+			                                <a class="page-link" href="?currentPage=${i}&itemsPerPage=${itemsPerPage}">${i}</a>
+			                            </li>
+			                        </c:forEach>
+			
+			                        <c:choose>
+			                            <c:when test="${currentPage + 5 < totalPages}">
+			                                <li class="page-item disabled">
+			                                    <span class="page-link">...</span>
+			                                </li>
+			                                <li class="page-item">
+			                                    <a class="page-link" href="?currentPage=${totalPages}&itemsPerPage=${itemsPerPage}">${totalPages}</a>
+			                                </li>
+			                            </c:when>
+			                        </c:choose>
+			
+			                        <!-- Next Page Button -->
+			                        <li class="page-item ${currentPage >= totalPages ? 'disabled' : ''}">
+			                            <a class="page-link" href="?currentPage=${currentPage + 1}&itemsPerPage=${itemsPerPage}" aria-label="Next">
+			                                <span aria-hidden="true">&raquo;</span>
+			                                <span class="sr-only">Next</span>
+			                            </a>
+			                        </li>
+			                    </ul>
+			                </nav>
+			            </div>
+			        </div>
+			    </div>
 			</div>
 
 		</div>
@@ -157,18 +239,57 @@
 </body>
 </html>
 
-<!-- Add this JavaScript function to make an AJAX call to fetch updated data -->
+
 <script>
-    function reloadData() {
-        // Make an AJAX call to fetch updated data
-        var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState == 4 && xhr.status == 200) {
-                // If the request is successful, update the table with the new data
-                document.getElementById("tableBody").innerHTML = xhr.responseText;
-            }
-        };
-        xhr.open("GET", "<%=request.getContextPath()%>/reloadData", true);
-        xhr.send();
-    }
+	function fetchData() {
+	    // Collect necessary parameters with null/undefined checks and default values
+	    const currentPage = 1; // Default current page to 1
+	    const itemsPerPage = document.getElementById("itemsPerPage") && document.getElementById("itemsPerPage").value ? document.getElementById("itemsPerPage").value : 5;
+	    const inputAppId = document.getElementById("inputAppId") && document.getElementById("inputAppId").value ? document.getElementById("inputAppId").value : "";
+	    const inputCustCode = document.getElementById("inputCustCode") && document.getElementById("inputCustCode").value ? document.getElementById("inputCustCode").value : "";
+	    const inputCustNameEN = document.getElementById("inputCustNameEN") && document.getElementById("inputCustNameEN").value ? document.getElementById("inputCustNameEN").value : "";
+	    const inputMarketingId = document.getElementById("inputMarketingId") && document.getElementById("inputMarketingId").value ? document.getElementById("inputMarketingId").value : "";
+	    const inputChannel = document.getElementById("inputChannel") && document.getElementById("inputChannel").value ? document.getElementById("inputChannel").value : "";
+	    const inputCardid = document.getElementById("inputCardid") && document.getElementById("inputCardid").value ? document.getElementById("inputCardid").value : "";
+	    const inputCustNameTH = document.getElementById("inputCustNameTH") && document.getElementById("inputCustNameTH").value ? document.getElementById("inputCustNameTH").value : "";
+	    const inputBranch = document.getElementById("inputBranch") && document.getElementById("inputBranch").value ? document.getElementById("inputBranch").value : "";
+	
+	    // Construct the query parameters string
+	    const params = new URLSearchParams({
+	        currentPage,
+	        itemsPerPage,
+	        inputAppId,
+	        inputCustCode,
+	        inputCustNameEN,
+	        inputMarketingId,
+	        inputChannel,
+	        inputCardid,
+	        inputCustNameTH,
+	        inputBranch
+	    }).toString();
+	
+	    // Make an AJAX call to fetch updated data
+	    var xhr = new XMLHttpRequest();
+	    xhr.onreadystatechange = function() {
+	        if (xhr.readyState == 4 && xhr.status == 200) {
+	            // If the request is successful, update the table with the new data
+	            document.getElementById("tableBody").innerHTML = xhr.responseText;
+	        }
+	    };
+
+	    xhr.open("GET", `<%=request.getContextPath()%>/reloadData?${params}`, true);
+	    xhr.send();
+	}
+		
+	function changeItemsPerPage(itemsPerPage) {
+	    // Create a URL object
+	    const url = new URL(window.location.href);
+	    // Set the itemsPerPage parameter
+	    url.searchParams.set('itemsPerPage', itemsPerPage);
+	    // Reset to the first page
+	    url.searchParams.set('currentPage', 1);
+	    // Reload the page with the new parameters
+		console.log(url);
+	    window.location.href = url.href;
+	}
 </script>

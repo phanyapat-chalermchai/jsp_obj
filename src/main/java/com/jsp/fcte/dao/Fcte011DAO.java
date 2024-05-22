@@ -8,31 +8,29 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
+import javax.servlet.ServletContext;
+
+import com.jsp.fcte.dto.PaginationDTO;
 import com.jsp.fcte.modal.*;
 
 public class Fcte011DAO {
-	private String jdbcURL = "jdbc:informix-sqli://zircon:61000/refdbdbsv3:INFORMIXSERVER=sbaserver;DB_LOCALE=th_th.thai620;";
-    private String jdbcUsername = "inforef";
-    private String jdbcPassword = "inforef";
+    private String jdbcURL;
+    private String jdbcUsername;
+    private String jdbcPassword;
+    private String jdbcDriver;
 
-    // JDBC driver class name
-    private static final String JDBC_DRIVER = "com.informix.jdbc.IfxDriver";
 
     private static final String INSERT_FCTE011_SQL = "INSERT INTO taccpayment (cardid, custacct, custcode, account, transtype, rptype, bankcheqcode, bankcode, bankbranchcode, "
     		+ "bankaccno, bankacctype, bankcheqcodeextra, paytype, crosstype, effdate, enddate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
-    private static final String SELECT_FCTE011_BY_ID = "SELECT FIRST 1 * FROM taccpayment WHERE cardid = ? and custcode = ? and account = ? and transtype = ? and rptype = ?";
+    private static final String SELECT_ALL_FCTE011 = "SELECT ap.* FROM taccpayment ap LEFT JOIN tcustcode cc ON ap.custcode = cc.custcode ";
     
-    private static final String SELECT_ALL_FCTE011 = "SELECT FIRST 10 * FROM taccpayment ap LEFT JOIN tcustcode cc ON ap.cardid = cc.cardid";
-    
-    private static final String UPDATE_FCTE011_SQL = "UPDATE taccpayment SET bankcheqcode = ?, bankcode = ?, bankbranchcode = ?, bankaccno = ?, bankacctype = ?, "
-    		+ "bankcheqcodeextra = ?, paytype = ?, crosstype = ?, effdate = ?, enddate = ? WHERE cardid = ? and custcode = ? and account = ? and transtype = ? and rptype = ?";
-	
-    private static final String DELETE_FCTE011_SQL = "DELETE FROM taccpayment WHERE cardid = ? and custcode = ? and account = ? and transtype = ? and rptype = ?";
-    
-    public Fcte011DAO() {
+    public Fcte011DAO(ServletContext context) {
+        this.jdbcURL = context.getInitParameter("jdbcURL");
+        this.jdbcUsername = context.getInitParameter("jdbcUsername");
+        this.jdbcPassword = context.getInitParameter("jdbcPassword");
+        this.jdbcDriver = context.getInitParameter("jdbcDriver");
     }
 
 
@@ -40,7 +38,7 @@ public class Fcte011DAO {
         Connection connection = null;
         try {
             // Load and register the JDBC driver
-            Class.forName(JDBC_DRIVER);
+            Class.forName(jdbcDriver);
             DriverManager.registerDriver(new com.informix.jdbc.IfxDriver());
             // Open a connection
             connection = DriverManager.getConnection(jdbcURL, jdbcUsername, jdbcPassword);
@@ -53,46 +51,56 @@ public class Fcte011DAO {
     }
 
     // Select all accPayments
-    public List<AccPayment> searchListAccPayment(String appId, String custCode, String custNameEN, String marketingId, 
-    		String channel, String cardId, String custNameTH, String branch) {
+    public PaginationDTO<AccPayment> searchListAccPayment(String inputAppId, String inputCustCode, String inputCustNameEN, String inputMarketingId, 
+    		String inputChannel, String inputCardid, String inputCustNameTH, String inputBranch, int currentPage, int itemsPerPage) {
     	
-    	String WHERE_CLAUSE = " WHERE";
+    	String WHERE_CLAUSE = "";
         boolean hasPreviousCondition = false;
             
-        if (appId != null && !appId.isEmpty()) {
-        	WHERE_CLAUSE += " cc.settleid = '" + appId + "'";
+        if (inputAppId != null && !inputAppId.isEmpty()) {
+        	WHERE_CLAUSE += " cc.settleid = '" + inputAppId + "'";
         	hasPreviousCondition = true;
         }
     	
-	    if (channel != null && !channel.isEmpty()) {
+	    if (inputChannel != null && !inputChannel.isEmpty()) {
 	    	if (hasPreviousCondition) {
 	    		WHERE_CLAUSE += " AND";
 	    	}
-	    	if (channel.equals("ONLINE"))
-	    		WHERE_CLAUSE += " (DATE(SYSDATE) BETWEEN DATE(cc.lineeffective) AND TRUNC(cc.lineexpire))";
+	    	if (inputChannel.equals("ONLINE"))
+	    		WHERE_CLAUSE += " (DATE(SYSDATE) BETWEEN DATE(cc.lineeffective) AND DATE(cc.lineexpire))";
 	    	else
-		    	WHERE_CLAUSE += " (DATE(SYSDATE) NOT BETWEEN DATE(cc.lineeffective) AND TRUNC(cc.lineexpire))";
+		    	WHERE_CLAUSE += " (DATE(SYSDATE) NOT BETWEEN DATE(cc.lineeffective) AND DATE(cc.lineexpire))";
 	    	hasPreviousCondition = true;
 	    }
 
-    	WHERE_CLAUSE += addSqlStringCondition(custCode, "ap.custcode", hasPreviousCondition);
-    	WHERE_CLAUSE += addSqlStringCondition(cardId, "ap.cardid", hasPreviousCondition);
-    	WHERE_CLAUSE += addSqlStringCondition(custNameEN + "%", "cc.efullname", hasPreviousCondition);
-    	WHERE_CLAUSE += addSqlStringCondition(custNameTH + "%", "cc.lfullname", hasPreviousCondition);
-    	WHERE_CLAUSE += addSqlStringCondition(marketingId, "cc.marketingId", hasPreviousCondition);
-    	WHERE_CLAUSE += addSqlStringCondition(branch, "cc.branch", hasPreviousCondition);
+    	WHERE_CLAUSE += addSqlStringCondition(inputCustCode, "ap.custcode", hasPreviousCondition);
+	    if (!WHERE_CLAUSE.isEmpty()) hasPreviousCondition = true;
+    	WHERE_CLAUSE += addSqlStringCondition(inputCardid, "ap.cardid", hasPreviousCondition);
+	    if (!WHERE_CLAUSE.isEmpty()) hasPreviousCondition = true;
+    	WHERE_CLAUSE += addSqlStringCondition(inputCustNameEN, "cc.efullname", hasPreviousCondition);
+	    if (!WHERE_CLAUSE.isEmpty()) hasPreviousCondition = true;
+    	WHERE_CLAUSE += addSqlStringCondition(inputCustNameTH, "cc.lfullname", hasPreviousCondition);
+	    if (!WHERE_CLAUSE.isEmpty()) hasPreviousCondition = true;
+    	WHERE_CLAUSE += addSqlStringCondition(inputMarketingId, "cc.mktid", hasPreviousCondition);
+	    if (!WHERE_CLAUSE.isEmpty()) hasPreviousCondition = true;
+    	WHERE_CLAUSE += addSqlStringCondition(inputBranch, "cc.branch", hasPreviousCondition);
+	    if (!WHERE_CLAUSE.isEmpty()) hasPreviousCondition = true;
       
-        String CUSTOM_SELECT_ALL_FCTE011 = SELECT_ALL_FCTE011;
-        if(hasPreviousCondition)
-        	CUSTOM_SELECT_ALL_FCTE011 += WHERE_CLAUSE;
-        
-        // Calculate OFFSET and FETCH
-//        int offset = (pageNumber - 1) * 10;
-//        String paginationClause = " OFFSET " + offset + " ROWS FETCH NEXT " + 10 + " ROWS ONLY";
 
-        System.out.println("11.13pm__________________________________________");
+        // Calculate OFFSET and FETCH
+        int offset = (currentPage - 1) * itemsPerPage;
+        String CUSTOM_SELECT_ALL_FCTE011 = "SELECT" + " SKIP " + offset + " FIRST " + itemsPerPage + " ap.* FROM taccpayment ap LEFT JOIN tcustcode cc ON ap.custcode = cc.custcode ";
+        
+        if(hasPreviousCondition)
+        	CUSTOM_SELECT_ALL_FCTE011 += " WHERE " + WHERE_CLAUSE;
+
+        System.out.println("9.59am_________________________");
+        System.out.println(CUSTOM_SELECT_ALL_FCTE011);
+        
         
         List<AccPayment> accPayments = new ArrayList<>();
+        int totalItems = 0;
+        
         try (Connection connection = getConnection();
         	PreparedStatement preparedStatement = connection.prepareStatement(CUSTOM_SELECT_ALL_FCTE011)) {
         		ResultSet rs = preparedStatement.executeQuery();
@@ -117,26 +125,56 @@ public class Fcte011DAO {
                             bankbranchcode, bankaccno, bankacctype, bankcheqcodeextra, paytype, crosstype,
                             effdate, enddate));
 	          	}
+	          	// Get total items count
+	            String countQuery = "SELECT COUNT(*) FROM (" + SELECT_ALL_FCTE011 + (hasPreviousCondition ? " WHERE " : "") + WHERE_CLAUSE + ")";
+	            System.out.println(countQuery);
+	            try (PreparedStatement countStatement = connection.prepareStatement(countQuery)) {
+	                ResultSet countRs = countStatement.executeQuery();
+	                if (countRs.next()) {
+	                    totalItems = countRs.getInt(1);
+	                }
+	            }
         } catch (SQLException e) {
         	printSQLException(e);
         }
-        return accPayments;
+
+        // Calculate total pages
+        int totalPages = (int) Math.ceil((double) totalItems / itemsPerPage);
+
+        // Initialize the PaginationDTO object
+        PaginationDTO<AccPayment> fcteDTO = new PaginationDTO<>(accPayments, totalItems, totalPages, currentPage, itemsPerPage);
+        
+        
+        return fcteDTO;
     }
 
     public AccPayment selectAccPayment(String inputCardid, String inputCustcode,String inputAccount, String inputTranstype, String inputRptype) {
         AccPayment accPayment = null;
-    	System.out.println(SELECT_FCTE011_BY_ID);
-    	System.out.println(inputCustcode);
-    	System.out.println(inputAccount);
-    	System.out.println(inputTranstype);
-    	System.out.println(inputRptype);
+        String SELECT_FCTE011_BY_ID;
+
+        if (inputCardid == null || inputCardid.isEmpty()) {
+        	SELECT_FCTE011_BY_ID = "SELECT FIRST 1 * FROM taccpayment WHERE custcode = ? and account = ? and transtype = ? and rptype = ?";
+        } else {
+        	SELECT_FCTE011_BY_ID = "SELECT FIRST 1 * FROM taccpayment WHERE cardid = ? and custcode = ? and account = ? and transtype = ? and rptype = ?";
+        }
+        
+        System.out.println("_________start__selectAccPayment_____10.19am_____________");
+        System.out.println(inputCardid);
+        System.out.println(inputCustcode);
+        System.out.println(inputAccount);
+        System.out.println(inputTranstype);
+        System.out.println(inputRptype);
+        System.out.println(SELECT_FCTE011_BY_ID);
         try (Connection connection = getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(SELECT_FCTE011_BY_ID)) {
-            	preparedStatement.setString(1, inputCardid);
-	            preparedStatement.setString(2, inputCustcode);
-	            preparedStatement.setString(3, inputAccount);
-	            preparedStatement.setString(4, inputTranstype);
-	            preparedStatement.setString(5, inputRptype);
+	            int paramIndex = 1;
+	            if (inputCardid != null && !inputCardid.isEmpty()) {
+	                preparedStatement.setString(paramIndex++, inputCardid);
+	            }
+	            preparedStatement.setString(paramIndex++, inputCustcode);
+	            preparedStatement.setString(paramIndex++, inputAccount);
+	            preparedStatement.setString(paramIndex++, inputTranstype);
+	            preparedStatement.setString(paramIndex, inputRptype);
 	            ResultSet rs = preparedStatement.executeQuery();
 	          	while (rs.next()) {
 	                String cardid = rs.getString("cardid");
@@ -155,8 +193,49 @@ public class Fcte011DAO {
 	                String crosstype = rs.getString("crosstype");
 	                Date effdate = rs.getDate("effdate");
 	                Date enddate = rs.getDate("enddate");
-	                
-		        	System.out.println(rptype);
+	
+	                accPayment = new AccPayment(cardid, custacct, custcode, account, transtype, rptype, bankcheqcode, bankcode,
+	                        bankbranchcode, bankaccno, bankacctype, bankcheqcodeextra, paytype, crosstype,
+	                        effdate, enddate);
+	            }
+        } catch (SQLException e) {
+            printSQLException(e);
+        }
+        return accPayment;
+    }
+    
+
+    public AccPayment defaultInfoAccPayment(String inputCardid) {
+        AccPayment accPayment = null;
+        String DEFAULT_FCTE011_BY_ID = "SELECT cc.cardid, cc.custcode, ol.custacct, ol.bankcode, ol.bankbranchcode, ol.bankaccno, bb.bankcheqcode"
+        		+ " FROM tcustcode"
+        		+ "	left join jopenonline ol on cc.custcode = ol.custcode"
+        		+ "	left join tbankbranch bb on ol.bankcode = bb.bankcode and ol.bankbranchcode = bb.bankbranchcode"
+        		+ " WHERE cc.cardid = ?";
+        
+        System.out.println("_________start__selectAccPayment_____10.19am_____________");
+        System.out.println(DEFAULT_FCTE011_BY_ID);
+        try (Connection connection = getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(DEFAULT_FCTE011_BY_ID)) {
+	                preparedStatement.setString(1, inputCardid);
+	            ResultSet rs = preparedStatement.executeQuery();
+	          	while (rs.next()) {
+	                String cardid = rs.getString("cardid");
+	                String custacct = rs.getString("custacct");
+	                String custcode = rs.getString("custcode");
+	                String account = rs.getString("account");
+	                String transtype = rs.getString("transtype");
+	                String rptype = rs.getString("rptype");
+	                String bankcheqcode = rs.getString("bankcheqcode");
+	                String bankcode = rs.getString("bankcode");
+	                String bankbranchcode = rs.getString("bankbranchcode");
+	                String bankaccno = rs.getString("bankaccno");
+	                String bankacctype = rs.getString("bankacctype");
+	                String bankcheqcodeextra = rs.getString("bankcheqcodeextra");
+	                String paytype = rs.getString("paytype");
+	                String crosstype = rs.getString("crosstype");
+	                Date effdate = rs.getDate("effdate");
+	                Date enddate = rs.getDate("enddate");
 	
 	                accPayment = new AccPayment(cardid, custacct, custcode, account, transtype, rptype, bankcheqcode, bankcode,
 	                        bankbranchcode, bankaccno, bankacctype, bankcheqcodeextra, paytype, crosstype,
@@ -170,55 +249,138 @@ public class Fcte011DAO {
 
     public void insertAccPayment(AccPayment accPayment) throws SQLException {
     	System.out.println(INSERT_FCTE011_SQL);
-        try (Connection connection = getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(INSERT_FCTE011_SQL)) {
-	            preparedStatement.setString(1, accPayment.getCardid());
-	            preparedStatement.setString(2, accPayment.getCustacct());
-	            preparedStatement.setString(3, accPayment.getCustcode());
-	            preparedStatement.setString(4, accPayment.getAccount());
-	            preparedStatement.setString(5, accPayment.getTranstype());
-	            preparedStatement.setString(6, accPayment.getRptype());
-	            preparedStatement.setString(7, accPayment.getBankcheqcode());
-	            preparedStatement.setString(8, accPayment.getBankcode());
-	            preparedStatement.setString(9, accPayment.getBankbranchcode());
-	            preparedStatement.setString(10, accPayment.getBankaccno());
-	            preparedStatement.setString(11, accPayment.getBankacctype());
-	            preparedStatement.setString(12, accPayment.getBankcheqcodeextra());
-	            preparedStatement.setString(13, accPayment.getPaytype());
-	            preparedStatement.setString(14, accPayment.getCrosstype());
-	            preparedStatement.setDate(15, accPayment.getEffdate());
-	            preparedStatement.setDate(16, accPayment.getEnddate());
-	        	System.out.println(preparedStatement.toString());
-	            preparedStatement.executeUpdate();
+    	System.out.println("INSERT_FCTE011_SQL_10.32PM");
+        Connection connection = null;
+        PreparedStatement preparedExistStatement = null;
+        PreparedStatement preparedDeleteStatement = null;
+        PreparedStatement preparedInsertStatement = null;
+        ResultSet rs = null;
+        try {
+            connection = getConnection();
+            connection.setAutoCommit(false); // Begin transaction
+            int paramIndex;
+            
+            String SELECT_FCTE011_BY_ID;
+            if (accPayment.getCardid() == null || accPayment.getCardid().isEmpty()) {
+                SELECT_FCTE011_BY_ID = "SELECT FIRST 1 * FROM taccpayment WHERE custcode = ? and account = ? and transtype = ? and rptype = ?";
+            } else {
+                SELECT_FCTE011_BY_ID = "SELECT FIRST 1 * FROM taccpayment WHERE cardid = ? and custcode = ? and account = ? and transtype = ? and rptype = ?";
+            }
+            // Check for existence
+            preparedExistStatement = connection.prepareStatement(SELECT_FCTE011_BY_ID);
+            paramIndex = 1; // Reset paramIndex for this statement
+            if (accPayment.getCardid() != null && !accPayment.getCardid().isEmpty()) {
+                preparedExistStatement.setString(paramIndex++, accPayment.getCardid());
+            }
+            preparedExistStatement.setString(paramIndex++, accPayment.getCustcode());
+            preparedExistStatement.setString(paramIndex++, accPayment.getAccount());
+            preparedExistStatement.setString(paramIndex++, accPayment.getTranstype());
+            preparedExistStatement.setString(paramIndex++, accPayment.getRptype());
+            
+            rs = preparedExistStatement.executeQuery();
+
+            while (rs.next()) {
+                // If found duplicate, delete it
+                paramIndex = 1; // Reset paramIndex for this statement
+                
+                String DELETE_FCTE011_SQL;
+                if (accPayment.getCardid() == null || accPayment.getCardid().isEmpty()) {
+                    DELETE_FCTE011_SQL = "DELETE FROM taccpayment WHERE custcode = ? and account = ? and transtype = ? and rptype = ?";
+                } else {
+                    DELETE_FCTE011_SQL = "DELETE FROM taccpayment WHERE cardid = ? and custcode = ? and account = ? and transtype = ? and rptype = ?";
+                }
+                preparedDeleteStatement = connection.prepareStatement(DELETE_FCTE011_SQL);
+                if (accPayment.getCardid() != null && !accPayment.getCardid().isEmpty()) {
+                    preparedDeleteStatement.setString(paramIndex++, accPayment.getCardid());
+                }
+                preparedDeleteStatement.setString(paramIndex++, accPayment.getCustcode());
+                preparedDeleteStatement.setString(paramIndex++, accPayment.getAccount());
+                preparedDeleteStatement.setString(paramIndex++, accPayment.getTranstype());
+                preparedDeleteStatement.setString(paramIndex++, accPayment.getRptype());
+                
+                boolean rowDeleted = preparedDeleteStatement.executeUpdate() > 0;
+                System.out.println("Duplicate found and deleted: " + rowDeleted);
+            }
+
+            // Insert new record
+            preparedInsertStatement = connection.prepareStatement(INSERT_FCTE011_SQL);
+            paramIndex = 1; // Reset paramIndex for this statement
+            preparedInsertStatement.setString(paramIndex++, accPayment.getCardid());
+            preparedInsertStatement.setString(paramIndex++, accPayment.getCustacct());
+            preparedInsertStatement.setString(paramIndex++, accPayment.getCustcode());
+            preparedInsertStatement.setString(paramIndex++, accPayment.getAccount());
+            preparedInsertStatement.setString(paramIndex++, accPayment.getTranstype());
+            preparedInsertStatement.setString(paramIndex++, accPayment.getRptype());
+            preparedInsertStatement.setString(paramIndex++, accPayment.getBankcheqcode());
+            preparedInsertStatement.setString(paramIndex++, accPayment.getBankcode());
+            preparedInsertStatement.setString(paramIndex++, accPayment.getBankbranchcode());
+            preparedInsertStatement.setString(paramIndex++, accPayment.getBankaccno());
+            preparedInsertStatement.setString(paramIndex++, accPayment.getBankacctype());
+            preparedInsertStatement.setString(paramIndex++, accPayment.getBankcheqcodeextra());
+            preparedInsertStatement.setString(paramIndex++, accPayment.getPaytype());
+            preparedInsertStatement.setString(paramIndex++, accPayment.getCrosstype());
+            preparedInsertStatement.setDate(paramIndex++, accPayment.getEffdate());
+            preparedInsertStatement.setDate(paramIndex++, accPayment.getEnddate());
+            preparedInsertStatement.executeUpdate();
+
+            connection.commit(); // Commit transaction
         } catch (SQLException e) {
+            if (connection != null) {
+                try {
+                    connection.rollback(); // Rollback transaction in case of error
+                } catch (SQLException ex) {
+                    printSQLException(ex);
+                }
+            }
             printSQLException(e);
+        } finally {
+            // Close resources
+            if (rs != null) try { rs.close(); } catch (SQLException e) { printSQLException(e); }
+            if (preparedExistStatement != null) try { preparedExistStatement.close(); } catch (SQLException e) { printSQLException(e); }
+            if (preparedDeleteStatement != null) try { preparedDeleteStatement.close(); } catch (SQLException e) { printSQLException(e); }
+            if (preparedInsertStatement != null) try { preparedInsertStatement.close(); } catch (SQLException e) { printSQLException(e); }
+            if (connection != null) try { connection.close(); } catch (SQLException e) { printSQLException(e); }
         }
     }
 
+
     public boolean updateAccPayment(AccPayment accPayment) {
         boolean rowUpdated = false;
+        String UPDATE_FCTE011_SQL;
+
+        if (accPayment.getCardid() == null || accPayment.getCardid().isEmpty()) {
+        	UPDATE_FCTE011_SQL = "UPDATE taccpayment SET bankcheqcode = ?, bankcode = ?, bankbranchcode = ?, bankaccno = ?, bankacctype = ?, bankcheqcodeextra = ?, paytype = ?, crosstype = ?, "
+        			+ "effdate = ?, enddate = ? WHERE custcode = ? and account = ? and transtype = ? and rptype = ?";
+        } else {
+        	UPDATE_FCTE011_SQL = "UPDATE taccpayment SET bankcheqcode = ?, bankcode = ?, bankbranchcode = ?, bankaccno = ?, bankacctype = ?, bankcheqcodeextra = ?, paytype = ?, crosstype = ?, "
+        			+ "effdate = ?, enddate = ? WHERE cardid = ? and custcode = ? and account = ? and transtype = ? and rptype = ?";
+        }
+        
     	System.out.println(UPDATE_FCTE011_SQL);
         try (Connection connection = getConnection();
         	PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_FCTE011_SQL)) {
-        	
+	
+	            int paramIndex = 1;
 	            // Set parameters for the columns to be updated
-	            preparedStatement.setString(1, accPayment.getBankcheqcode());
-	            preparedStatement.setString(2, accPayment.getBankcode());
-	            preparedStatement.setString(3, accPayment.getBankbranchcode());
-	            preparedStatement.setString(4, accPayment.getBankaccno());
-	            preparedStatement.setString(5, accPayment.getBankacctype());
-	            preparedStatement.setString(6, accPayment.getBankcheqcodeextra());
-	            preparedStatement.setString(7, accPayment.getPaytype());
-	            preparedStatement.setString(8, accPayment.getCrosstype());
-	            preparedStatement.setDate(9, accPayment.getEffdate());
-	            preparedStatement.setDate(10, accPayment.getEnddate());
+	            preparedStatement.setString(paramIndex++, accPayment.getBankcheqcode());
+	            preparedStatement.setString(paramIndex++, accPayment.getBankcode());
+	            preparedStatement.setString(paramIndex++, accPayment.getBankbranchcode());
+	            preparedStatement.setString(paramIndex++, accPayment.getBankaccno());
+	            preparedStatement.setString(paramIndex++, accPayment.getBankacctype());
+	            preparedStatement.setString(paramIndex++, accPayment.getBankcheqcodeextra());
+	            preparedStatement.setString(paramIndex++, accPayment.getPaytype());
+	            preparedStatement.setString(paramIndex++, accPayment.getCrosstype());
+	            preparedStatement.setDate(paramIndex++, accPayment.getEffdate());
+	            preparedStatement.setDate(paramIndex++, accPayment.getEnddate());
 	
 	            // Set parameters for the WHERE clause
-	            preparedStatement.setString(11, accPayment.getCardid());
-	            preparedStatement.setString(12, accPayment.getCustcode());
-	            preparedStatement.setString(13, accPayment.getAccount());
-	            preparedStatement.setString(14, accPayment.getTranstype());
-	            preparedStatement.setString(15, accPayment.getRptype());
+	            if (accPayment.getCardid() != null && !accPayment.getCardid().isEmpty()) {
+		            preparedStatement.setString(paramIndex++, accPayment.getCardid());
+	            }
+	            preparedStatement.setString(paramIndex++, accPayment.getCustcode());
+	            preparedStatement.setString(paramIndex++, accPayment.getAccount());
+	            preparedStatement.setString(paramIndex++, accPayment.getTranstype());
+	            preparedStatement.setString(paramIndex++, accPayment.getRptype());
 	            
 	            rowUpdated = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -229,18 +391,30 @@ public class Fcte011DAO {
 
     public boolean deleteAccPayment(String inputCardid, String inputCustcode,String inputAccount, String inputTranstype, String inputRptype) {
         boolean rowDeleted = false;
+        String DELETE_FCTE011_SQL;
+
+        if (inputCardid == null || inputCardid.isEmpty()) {
+            DELETE_FCTE011_SQL = "DELETE FROM taccpayment WHERE custcode = ? and account = ? and transtype = ? and rptype = ?";
+        } else {
+            DELETE_FCTE011_SQL = "DELETE FROM taccpayment WHERE cardid = ? and custcode = ? and account = ? and transtype = ? and rptype = ?";
+        }
+        
     	System.out.println(DELETE_FCTE011_SQL);
+    	System.out.println(inputCardid);
     	System.out.println(inputCustcode);
     	System.out.println(inputAccount);
     	System.out.println(inputTranstype);
     	System.out.println(inputRptype);
         try (Connection connection = getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(DELETE_FCTE011_SQL)) {
-	        	preparedStatement.setString(1, inputCardid);
-	            preparedStatement.setString(2, inputCustcode);
-	            preparedStatement.setString(3, inputAccount);
-	            preparedStatement.setString(4, inputTranstype);
-	            preparedStatement.setString(5, inputRptype);
+	            int paramIndex = 1;
+	            if (inputCardid != null && !inputCardid.isEmpty()) {
+	                preparedStatement.setString(paramIndex++, inputCardid);
+	            }
+	            preparedStatement.setString(paramIndex++, inputCustcode);
+	            preparedStatement.setString(paramIndex++, inputAccount);
+	            preparedStatement.setString(paramIndex++, inputTranstype);
+	            preparedStatement.setString(paramIndex, inputRptype);
 	            rowDeleted = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
             printSQLException(e);
@@ -264,14 +438,19 @@ public class Fcte011DAO {
         }
     }
     
-    public String addSqlStringCondition(String parameter, String column, Boolean hasPreviousCondition) {
+    public String addSqlStringCondition(String parameter, String column, boolean hasPreviousCondition) {
     	String conditionStr = "";
         if (parameter != null && !parameter.isEmpty()) {
             if (hasPreviousCondition) {
             	conditionStr += " AND";
             }
-            conditionStr += " " + column + " = '" + parameter + "'";
-            hasPreviousCondition = true;
+            
+            if(column.equals("cc.efullname") || column.equals("cc.lfullname")) {
+            	conditionStr += " " + column + " like '" + parameter + "%'";
+            }
+            else {
+            	conditionStr += " " + column + " = '" + parameter + "'";
+            }
         }
         return conditionStr;
     }

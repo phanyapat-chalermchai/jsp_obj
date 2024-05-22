@@ -1,16 +1,13 @@
 package com.jsp.fcte.controller;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.sql.Date;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.*;
 import javax.servlet.http.HttpServlet;
@@ -18,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.jsp.fcte.dao.*;
+import com.jsp.fcte.dto.PaginationDTO;
 import com.jsp.fcte.modal.*;
 
 
@@ -25,10 +23,12 @@ import com.jsp.fcte.modal.*;
 public class Fcte011Controller extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Fcte011DAO accPaymentDAO;
-	
-	public void init() {
-		accPaymentDAO = new Fcte011DAO();
-	}
+
+    @Override
+    public void  init() throws ServletException {
+        ServletContext context = getServletContext();
+        accPaymentDAO = new Fcte011DAO(context);
+    }
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -43,6 +43,9 @@ public class Fcte011Controller extends HttpServlet {
 			switch (action) {
 			case "/new":
 				showNewForm(request, response);
+				break;
+			case "/defaultInfo":
+				showDefaultInfoForm(request, response);
 				break;
 			case "/insert":
 				insertAccPayment(request, response);
@@ -82,36 +85,26 @@ public class Fcte011Controller extends HttpServlet {
             throws SQLException, IOException, ServletException {
     	
         String appId = request.getParameter("appId");
-        String custCode = request.getParameter("custId");
-        String custNameEN = request.getParameter("custNameEN");
-        String marketingId = request.getParameter("marketingId");
         String channel = request.getParameter("channel");
-        String cardId = request.getParameter("cardId");
+        String custNameEN = request.getParameter("custNameEN");
         String custNameTH = request.getParameter("custNameTH");
+        String custCode = request.getParameter("custcode");
+        String cardid = request.getParameter("cardid");
+        String marketingId = request.getParameter("marketingId");
         String branch = request.getParameter("branch");
-        
-        List<AccPayment> listAccPayment = accPaymentDAO.searchListAccPayment(appId, custCode, custNameEN,
-        		marketingId, channel, cardId, custNameTH, branch);
-        request.setAttribute("listAccPayment", listAccPayment);
-        
-        request.setAttribute("appIdParam", appId);
-        request.setAttribute("custIdParam", custCode);
-        request.setAttribute("custNameENParam", custNameEN);
-        request.setAttribute("marketingIdParam", marketingId);
-        request.setAttribute("channelParam", channel);
-        request.setAttribute("cardIdParam", cardId);
-        request.setAttribute("custNameTHParam", custNameTH);
-        request.setAttribute("branchParam", branch);
-        
-        int pageNumber = request.getParameter("page") != null ? Integer.parseInt(request.getParameter("page")) : 1;
-        int itemsPerPage = 10; // Change this value as per your requirement
 
-
-        request.setAttribute("pageNumber", pageNumber);
-        request.setAttribute("itemsPerPage", itemsPerPage);
-        request.setAttribute("itemsPerPage", itemsPerPage);
+        int currentPage = request.getParameter("currentPage") != null ? Integer.valueOf(request.getParameter("currentPage")) : 1;
+        int itemsPerPage = request.getParameter("itemsPerPage")!= null ? Integer.valueOf(request.getParameter("itemsPerPage")) : 5;
         
+        PaginationDTO<AccPayment> fcte011DTO = accPaymentDAO.searchListAccPayment(appId, custCode, custNameEN,
+        		marketingId, channel, cardid, custNameTH, branch, currentPage, itemsPerPage);
+        request.setAttribute("listAccPayment", fcte011DTO.getData());
         
+        request.setAttribute("listAccPayment", fcte011DTO.getData());
+        request.setAttribute("totalItems", fcte011DTO.getTotalItems());
+        request.setAttribute("totalPages", fcte011DTO.getTotalPages());
+        request.setAttribute("currentPage", fcte011DTO.getCurrentPage());
+        request.setAttribute("itemsPerPage", fcte011DTO.getItemsPerPage());
         
         RequestDispatcher dispatcher = request.getRequestDispatcher("list.jsp");
         dispatcher.forward(request, response);
@@ -123,9 +116,19 @@ public class Fcte011Controller extends HttpServlet {
         dispatcher.forward(request, response);
     }
 
+    private void showDefaultInfoForm(HttpServletRequest request, HttpServletResponse response)
+            throws SQLException, ServletException, IOException {
+    	System.out.println("showEditForm   showEditForm  showEditForm");
+        String cardid = request.getParameter("cardid");
+        AccPayment existingAccPayment = accPaymentDAO.defaultInfoAccPayment(cardid);
+        RequestDispatcher dispatcher = request.getRequestDispatcher("form.jsp");
+        request.setAttribute("accPayment", existingAccPayment);
+        dispatcher.forward(request, response);
+    }
+
     private void showEditForm(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, ServletException, IOException {
-        System.out.println("goin showEditForm");
+    	System.out.println("showEditForm   showEditForm  showEditForm");
         String cardid = request.getParameter("cardid");
         String custcode = request.getParameter("custcode");
         String account = request.getParameter("account");
@@ -156,12 +159,14 @@ public class Fcte011Controller extends HttpServlet {
         String crosstype = request.getParameter("crosstype");
         
         String effectdateStr = request.getParameter("effectdate");
+        System.out.println(effectdateStr);
         Date effectdate = null;
         if (effectdateStr != null && !effectdateStr.isEmpty()) {
         	effectdate = Date.valueOf(effectdateStr);
         }
         
         String enddateStr = request.getParameter("enddate");
+        System.out.println(enddateStr);
         Date enddate = null;
         if (enddateStr != null && !enddateStr.isEmpty()) {
         	enddate = Date.valueOf(enddateStr);
@@ -176,7 +181,7 @@ public class Fcte011Controller extends HttpServlet {
         accPaymentDAO.insertAccPayment(newAccPayment);
         
         // Redirect the user to the list page
-        response.sendRedirect("searchList?custid="+ custcode);
+        response.sendRedirect("searchList?custcode="+ custcode + "&cardid=" + cardid);
     }
 
     private void updateAccPayment(HttpServletRequest request, HttpServletResponse response)
@@ -196,14 +201,19 @@ public class Fcte011Controller extends HttpServlet {
         String bankcheqcodeextra = request.getParameter("bankcheqcodeextra");
         String paytype = request.getParameter("paytype");
         String crosstype = request.getParameter("crosstype");
+
+        System.out.println(cardid);
+        System.out.println(custcode);
         
         String effectdateStr = request.getParameter("effectdate");
+        System.out.println(effectdateStr);
         Date effectdate = null;
         if (effectdateStr != null && !effectdateStr.isEmpty()) {
         	effectdate = Date.valueOf(effectdateStr);
         }
         
         String enddateStr = request.getParameter("enddate");
+        System.out.println(enddateStr);
         Date enddate = null;
         if (enddateStr != null && !enddateStr.isEmpty()) {
         	enddate = Date.valueOf(enddateStr);
@@ -218,18 +228,18 @@ public class Fcte011Controller extends HttpServlet {
         accPaymentDAO.updateAccPayment(accPayment);
         
         // Redirect the user to the list page
-        response.sendRedirect("searchList?custid="+ custcode);
+        response.sendRedirect("searchList?custcode="+ custcode + "&cardid=" + cardid);
     }
 
     private void deleteAccPayment(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException {
-        String cardId = request.getParameter("cardid");
+        String cardid = request.getParameter("cardid");
         String custcode = request.getParameter("custcode");
         String account = request.getParameter("account");
         String transtype = request.getParameter("transtype");
         String rptype = request.getParameter("rptype");
-        accPaymentDAO.deleteAccPayment(cardId, custcode, account, transtype, rptype);
-        response.sendRedirect("searchList?custid="+ custcode);
+        accPaymentDAO.deleteAccPayment(cardid, custcode, account, transtype, rptype);
+        response.sendRedirect("searchList?custcode="+ custcode + "&cardid=" + cardid);
     }
 
 }
