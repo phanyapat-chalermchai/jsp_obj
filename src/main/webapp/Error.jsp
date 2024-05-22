@@ -10,6 +10,7 @@
 	<center>
 		<h1>Error</h1>
 		<h2><%=exception.getMessage() %><br/> </h2>
+        <button class="btn btn-primary" onclick="window.location.href='<%=request.getContextPath()%>/list'">Back</button>
 	</center>	
 </body>
 </html>

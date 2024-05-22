@@ -49,6 +49,18 @@
     AccPayment accPayment = (AccPayment) request.getAttribute("accPayment");
     String formattedEffectDate = (accPayment != null && accPayment.getEffdate() != null) ? sdf.format(accPayment.getEffdate()) : sdf.format(new Date());
     String formattedEndDate = (accPayment != null && accPayment.getEnddate() != null) ? sdf.format(accPayment.getEnddate()) : "9999-12-31";
+    
+
+	String appId = (String) session.getAttribute("appId");
+	String channel = (String) session.getAttribute("channel");
+	String custNameEN = (String) session.getAttribute("custNameEN");
+	String custNameTH = (String) session.getAttribute("custNameTH");
+	String custCode = (String) session.getAttribute("custCode");
+	String cardid = (String) session.getAttribute("cardid");
+	String marketingId = (String) session.getAttribute("marketingId");
+	String branch = (String) session.getAttribute("branch");
+	
+	System.out.println(custCode);
 %>
 
 <style>
@@ -69,15 +81,15 @@
     <div class="container col-md-8">
         <div class="card mb-3">
             <div class="card-body"> 
-                <form action="<c:out value='${accPayment == null ? "insert" : "update"}' />" method="post" onsubmit="return validateForm()">
+                <form action="<c:out value='${modeEdit ? "update" : "insert"}' />" method="post">
                     <div class="form-row mb-3">
                         <h2>
-                            <c:if test="${accPayment != null}">Edit FCTE011</c:if>
-                            <c:if test="${accPayment == null}">Add New FCTE011</c:if>
+                            <c:if test="${modeEdit}">Edit FCTE011</c:if>
+                            <c:if test="${!modeEdit}">Add New FCTE011</c:if>
                         </h2>
                     </div>
 
-                    <c:if test="${accPayment != null}">
+                    <c:if test="${modeEdit}">
                         <!-- Hidden fields for parameters for send data to back-end when default field disable -->
                         <input type="hidden" name="cardid" value="<c:out value='${accPayment.cardid}' />">
                         <input type="hidden" name="custacct" value="<c:out value='${accPayment.custacct}' />">
@@ -93,37 +105,37 @@
                         <div class="form-group col-md-6">
                             <label>Card ID <span style="color: red">*</span></label> 
                             <div class="input-group">
-                                <input required step="1" oninput="this.value = this.value.replace(/\D/g, '')" maxlength="20" type="text" class="form-control" name="cardid" value="<c:out value='${accPayment.cardid}' />" <c:if test="${accPayment != null}">disabled</c:if>>
+                                <input required step="1" oninput="this.value = this.value.replace(/\D/g, '')" maxlength="20" type="text" class="form-control" name="cardid" value="<c:out value='${accPayment.cardid}' />" <c:if test="${modeEdit}">disabled</c:if>>
                                 <div class="input-group-append">
-                                    <button class="btn btn-primary" type="button" onclick="checkCardID()" <c:if test="${accPayment != null}">disabled</c:if>>Default Information</button>
+                                    <button class="btn btn-primary" type="button" onclick="window.location.href='<%=request.getContextPath()%>/defaultInfo'"> <c:if test="${modeEdit}">disabled</c:if>>Default Information</button>
                                 </div>
                             </div>
                         </div>
                         <div class="form-group col-md-6">
                             <label>Customer Account <span style="color: red">*</span></label> 
-                            <input required step="1" oninput="this.value = this.value.replace(/\D/g, '')" maxlength="1" type="text" class="form-control" name="custacct" value="<c:out value='${accPayment.custacct}' />" <c:if test="${accPayment != null}">disabled</c:if>>
+                            <input required step="1" oninput="this.value = this.value.replace(/\D/g, '')" maxlength="1" type="text" class="form-control" name="custacct" value="<c:out value='${accPayment.custacct}' />" <c:if test="${modeEdit}">disabled</c:if>>
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label>Customer Code <span style="color: red">*</span></label> 
-                            <input required step="1" oninput="this.value = this.value.replace(/\D/g, '')" maxlength="8" type="text" class="form-control" name="custcode" value="<c:out value='${accPayment.custcode}' />" <c:if test="${accPayment != null}">disabled</c:if>>
+                            <input required step="1" oninput="this.value = this.value.replace(/\D/g, '')" maxlength="8" type="text" class="form-control" name="custcode" value="<c:out value='${accPayment.custcode}' />" <c:if test="${modeEdit}">disabled</c:if>>
                         </div>
                         <div class="form-group col-md-6">
                             <label>Account <span style="color: red">*</span></label> 
-                            <input required oninput="validateInput(this)" onkeypress="return isNumberOrDashKey(event)" maxlength="15" type="text" class="form-control" name="account" value="<c:out value='${accPayment.account}' />" <c:if test="${accPayment != null}">disabled</c:if>>
+                            <input required oninput="validateInput(this)" onkeypress="return isNumberOrDashKey(event)" maxlength="15" type="text" class="form-control" name="account" value="<c:out value='${accPayment.account}' />" <c:if test="${modeEdit}">disabled</c:if>>
                         </div>
                     </div>
 
                     <div class="form-row mb-3">
                         <div class="form-group col-md-6">
                             <label>Transaction Type <span style="color: red">*</span></label> 
-                            <input required step="1" oninput="this.value = this.value.replace(/\D/g, '')" maxlength="10" type="text" class="form-control" name="transtype" value="<c:out value='${accPayment.transtype}' />" <c:if test="${accPayment != null}">disabled</c:if>>
+                            <input required step="1" oninput="this.value = this.value.replace(/\D/g, '')" maxlength="10" type="text" class="form-control" name="transtype" value="<c:out value='${accPayment.transtype}' />" <c:if test="${modeEdit}">disabled</c:if>>
                         </div>
                         <div class="form-group col-md-6">
                             <label>RP Type <span style="color: red">*</span></label> 
-                            <select required class="form-control" name="rptype" <c:if test="${accPayment != null}">disabled</c:if>> 
+                            <select required class="form-control" name="rptype" <c:if test="${modeEdit}">disabled</c:if>> 
                                 <option value="R" <c:if test="${accPayment.rptype == 'R'}">selected</c:if>>Receive</option>
                                 <option value="P" <c:if test="${accPayment.rptype == 'P'}">selected</c:if>>Payment</option>
                             </select>

@@ -94,8 +94,8 @@ public class Fcte011DAO {
         if(hasPreviousCondition)
         	CUSTOM_SELECT_ALL_FCTE011 += " WHERE " + WHERE_CLAUSE;
 
-        System.out.println("9.59am_________________________");
-        System.out.println(CUSTOM_SELECT_ALL_FCTE011);
+//        System.out.println("9.59am_________________________");
+//        System.out.println(CUSTOM_SELECT_ALL_FCTE011);
         
         
         List<AccPayment> accPayments = new ArrayList<>();
@@ -127,7 +127,7 @@ public class Fcte011DAO {
 	          	}
 	          	// Get total items count
 	            String countQuery = "SELECT COUNT(*) FROM (" + SELECT_ALL_FCTE011 + (hasPreviousCondition ? " WHERE " : "") + WHERE_CLAUSE + ")";
-	            System.out.println(countQuery);
+//	            System.out.println(countQuery);
 	            try (PreparedStatement countStatement = connection.prepareStatement(countQuery)) {
 	                ResultSet countRs = countStatement.executeQuery();
 	                if (countRs.next()) {
@@ -158,13 +158,13 @@ public class Fcte011DAO {
         	SELECT_FCTE011_BY_ID = "SELECT FIRST 1 * FROM taccpayment WHERE cardid = ? and custcode = ? and account = ? and transtype = ? and rptype = ?";
         }
         
-        System.out.println("_________start__selectAccPayment_____10.19am_____________");
-        System.out.println(inputCardid);
-        System.out.println(inputCustcode);
-        System.out.println(inputAccount);
-        System.out.println(inputTranstype);
-        System.out.println(inputRptype);
-        System.out.println(SELECT_FCTE011_BY_ID);
+//        System.out.println("_________start__selectAccPayment_____10.19am_____________");
+//        System.out.println(inputCardid);
+//        System.out.println(inputCustcode);
+//        System.out.println(inputAccount);
+//        System.out.println(inputTranstype);
+//        System.out.println(inputRptype);
+//        System.out.println(SELECT_FCTE011_BY_ID);
         try (Connection connection = getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(SELECT_FCTE011_BY_ID)) {
 	            int paramIndex = 1;
@@ -208,13 +208,13 @@ public class Fcte011DAO {
     public AccPayment defaultInfoAccPayment(String inputCardid) {
         AccPayment accPayment = null;
         String DEFAULT_FCTE011_BY_ID = "SELECT cc.cardid, cc.custcode, ol.custacct, ol.bankcode, ol.bankbranchcode, ol.bankaccno, bb.bankcheqcode"
-        		+ " FROM tcustcode"
+        		+ " FROM tcustcode cc"
         		+ "	left join jopenonline ol on cc.custcode = ol.custcode"
         		+ "	left join tbankbranch bb on ol.bankcode = bb.bankcode and ol.bankbranchcode = bb.bankbranchcode"
         		+ " WHERE cc.cardid = ?";
         
-        System.out.println("_________start__selectAccPayment_____10.19am_____________");
-        System.out.println(DEFAULT_FCTE011_BY_ID);
+//        System.out.println("_________start__selectAccPayment_____10.19am_____________");
+//        System.out.println(DEFAULT_FCTE011_BY_ID);
         try (Connection connection = getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(DEFAULT_FCTE011_BY_ID)) {
 	                preparedStatement.setString(1, inputCardid);
@@ -248,8 +248,8 @@ public class Fcte011DAO {
     }
 
     public void insertAccPayment(AccPayment accPayment) throws SQLException {
-    	System.out.println(INSERT_FCTE011_SQL);
-    	System.out.println("INSERT_FCTE011_SQL_10.32PM");
+//    	System.out.println(INSERT_FCTE011_SQL);
+//    	System.out.println("INSERT_FCTE011_SQL_10.32PM");
         Connection connection = null;
         PreparedStatement preparedExistStatement = null;
         PreparedStatement preparedDeleteStatement = null;
@@ -298,8 +298,8 @@ public class Fcte011DAO {
                 preparedDeleteStatement.setString(paramIndex++, accPayment.getTranstype());
                 preparedDeleteStatement.setString(paramIndex++, accPayment.getRptype());
                 
-                boolean rowDeleted = preparedDeleteStatement.executeUpdate() > 0;
-                System.out.println("Duplicate found and deleted: " + rowDeleted);
+                preparedDeleteStatement.executeUpdate();
+//                System.out.println("Duplicate found and deleted: " + rowDeleted);
             }
 
             // Insert new record
@@ -356,7 +356,7 @@ public class Fcte011DAO {
         			+ "effdate = ?, enddate = ? WHERE cardid = ? and custcode = ? and account = ? and transtype = ? and rptype = ?";
         }
         
-    	System.out.println(UPDATE_FCTE011_SQL);
+//    	System.out.println(UPDATE_FCTE011_SQL);
         try (Connection connection = getConnection();
         	PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_FCTE011_SQL)) {
 	
@@ -399,12 +399,12 @@ public class Fcte011DAO {
             DELETE_FCTE011_SQL = "DELETE FROM taccpayment WHERE cardid = ? and custcode = ? and account = ? and transtype = ? and rptype = ?";
         }
         
-    	System.out.println(DELETE_FCTE011_SQL);
-    	System.out.println(inputCardid);
-    	System.out.println(inputCustcode);
-    	System.out.println(inputAccount);
-    	System.out.println(inputTranstype);
-    	System.out.println(inputRptype);
+//    	System.out.println(DELETE_FCTE011_SQL);
+//    	System.out.println(inputCardid);
+//    	System.out.println(inputCustcode);
+//    	System.out.println(inputAccount);
+//    	System.out.println(inputTranstype);
+//    	System.out.println(inputRptype);
         try (Connection connection = getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(DELETE_FCTE011_SQL)) {
 	            int paramIndex = 1;
