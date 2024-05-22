@@ -212,9 +212,10 @@ public class Fcte011DAO {
         		+ "	left join jopenonline ol on cc.custcode = ol.custcode"
         		+ "	left join tbankbranch bb on ol.bankcode = bb.bankcode and ol.bankbranchcode = bb.bankbranchcode"
         		+ " WHERE cc.cardid = ?";
-        
-//        System.out.println("_________start__selectAccPayment_____10.19am_____________");
-//        System.out.println(DEFAULT_FCTE011_BY_ID);
+
+        System.out.println(inputCardid);
+        System.out.println("_________start__defaultInfoAccPayment_____2.18am___________");
+        System.out.println(DEFAULT_FCTE011_BY_ID);
         try (Connection connection = getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(DEFAULT_FCTE011_BY_ID)) {
 	                preparedStatement.setString(1, inputCardid);
@@ -223,23 +224,14 @@ public class Fcte011DAO {
 	                String cardid = rs.getString("cardid");
 	                String custacct = rs.getString("custacct");
 	                String custcode = rs.getString("custcode");
-	                String account = rs.getString("account");
-	                String transtype = rs.getString("transtype");
-	                String rptype = rs.getString("rptype");
 	                String bankcheqcode = rs.getString("bankcheqcode");
 	                String bankcode = rs.getString("bankcode");
 	                String bankbranchcode = rs.getString("bankbranchcode");
 	                String bankaccno = rs.getString("bankaccno");
-	                String bankacctype = rs.getString("bankacctype");
-	                String bankcheqcodeextra = rs.getString("bankcheqcodeextra");
-	                String paytype = rs.getString("paytype");
-	                String crosstype = rs.getString("crosstype");
-	                Date effdate = rs.getDate("effdate");
-	                Date enddate = rs.getDate("enddate");
 	
-	                accPayment = new AccPayment(cardid, custacct, custcode, account, transtype, rptype, bankcheqcode, bankcode,
-	                        bankbranchcode, bankaccno, bankacctype, bankcheqcodeextra, paytype, crosstype,
-	                        effdate, enddate);
+	                accPayment = new AccPayment(cardid, custacct, custcode, null, null, null, bankcheqcode, bankcode,
+	                        bankbranchcode, bankaccno, null, null, null, null,
+	                        null, null);
 	            }
         } catch (SQLException e) {
             printSQLException(e);

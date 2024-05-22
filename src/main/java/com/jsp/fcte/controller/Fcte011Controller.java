@@ -103,41 +103,41 @@ public class Fcte011Controller extends HttpServlet {
         int currentPage = request.getParameter("currentPage") != null ? Integer.valueOf(request.getParameter("currentPage")) : 1;
         int itemsPerPage = request.getParameter("itemsPerPage")!= null ? Integer.valueOf(request.getParameter("itemsPerPage")) : 5;
     	
-        System.out.println("search_1.35AM");
-        System.out.println("search_1.354AM");
-        System.out.println("search_1.3521321AM");
-
-        HttpSession session = request.getSession();
-        if(session.getAttribute("needFetchData") != null && session.getAttribute("needFetchData").equals("true")) {
-        	 System.out.println("needFetchData");
-	    	 appId = (String) session.getAttribute("appId");
-	    	 channel = (String) session.getAttribute("channel");
-	    	 custNameEN = (String) session.getAttribute("custNameEN");
-	    	 custNameTH = (String) session.getAttribute("custNameTH");
-	    	 custCode = (String) session.getAttribute("custCode");
-	    	 cardid = (String) session.getAttribute("cardid");
-	    	 marketingId = (String) session.getAttribute("marketingId");
-	    	 branch = (String) session.getAttribute("branch");
-        	 System.out.println(custNameEN);
-        	 System.out.println(cardid);
-        	 System.out.println(custCode);
-        	 System.out.println(marketingId);
-//	    	 currentPage = session.getAttribute("currentPage") != null ? Integer.valueOf((String) session.getAttribute("currentPage")) : 1;
-//	    	 itemsPerPage = session.getAttribute("itemsPerPage") != null ? Integer.valueOf((String) session.getAttribute("itemsPerPage")) : 5;
-        }
-        
-        //set session
-        session.setAttribute("appId", appId);
-        session.setAttribute("channel", channel);
-        session.setAttribute("custNameEN", custNameEN);
-        session.setAttribute("custNameTH", custNameTH);
-        session.setAttribute("custCode", custCode);
-        session.setAttribute("cardid", cardid);
-        session.setAttribute("marketingId", marketingId);
-        session.setAttribute("branch", branch);
-        session.setAttribute("currentPage", currentPage);
-        session.setAttribute("itemsPerPage", itemsPerPage);
-        session.setAttribute("needFetchData", "false");
+//        System.out.println("search_1.35AM");
+//        System.out.println("search_1.354AM");
+//        System.out.println("search_1.3521321AM");
+//
+//        HttpSession session = request.getSession();
+//        if(session.getAttribute("needFetchData") != null && session.getAttribute("needFetchData").equals("true")) {
+//        	 System.out.println("needFetchData");
+//	    	 appId = (String) session.getAttribute("appId");
+//	    	 channel = (String) session.getAttribute("channel");
+//	    	 custNameEN = (String) session.getAttribute("custNameEN");
+//	    	 custNameTH = (String) session.getAttribute("custNameTH");
+//	    	 custCode = (String) session.getAttribute("custCode");
+//	    	 cardid = (String) session.getAttribute("cardid");
+//	    	 marketingId = (String) session.getAttribute("marketingId");
+//	    	 branch = (String) session.getAttribute("branch");
+//        	 System.out.println(custNameEN);
+//        	 System.out.println(cardid);
+//        	 System.out.println(custCode);
+//        	 System.out.println(marketingId);
+////	    	 currentPage = session.getAttribute("currentPage") != null ? Integer.valueOf((String) session.getAttribute("currentPage")) : 1;
+////	    	 itemsPerPage = session.getAttribute("itemsPerPage") != null ? Integer.valueOf((String) session.getAttribute("itemsPerPage")) : 5;
+//        }
+//        
+//        //set session
+//        session.setAttribute("appId", appId);
+//        session.setAttribute("channel", channel);
+//        session.setAttribute("custNameEN", custNameEN);
+//        session.setAttribute("custNameTH", custNameTH);
+//        session.setAttribute("custCode", custCode);
+//        session.setAttribute("cardid", cardid);
+//        session.setAttribute("marketingId", marketingId);
+//        session.setAttribute("branch", branch);
+//        session.setAttribute("currentPage", currentPage);
+//        session.setAttribute("itemsPerPage", itemsPerPage);
+//        session.setAttribute("needFetchData", "false");
         
         //get query list
         PaginationDTO<AccPayment> fcte011DTO = accPaymentDAO.searchListAccPayment(appId, custCode, custNameEN,
@@ -157,33 +157,7 @@ public class Fcte011Controller extends HttpServlet {
 
     private void showNewForm(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-    	
-        String appId = request.getParameter("appId");
-        String channel = request.getParameter("channel");
-        String custNameEN = request.getParameter("custNameEN");
-        String custNameTH = request.getParameter("custNameTH");
-        String custCode = request.getParameter("custcode");
-        String cardid = request.getParameter("cardid");
-        String marketingId = request.getParameter("marketingId");
-        String branch = request.getParameter("branch");
-
-        HttpSession session = request.getSession();
-        	 System.out.println("needFetchData");
-	    	 appId = (String) session.getAttribute("appId");
-	    	 channel = (String) session.getAttribute("channel");
-	    	 custNameEN = (String) session.getAttribute("custNameEN");
-	    	 custNameTH = (String) session.getAttribute("custNameTH");
-	    	 custCode = (String) session.getAttribute("custCode");
-	    	 cardid = (String) session.getAttribute("cardid");
-	    	 marketingId = (String) session.getAttribute("marketingId");
-	    	 branch = (String) session.getAttribute("branch");
-        	 System.out.println(custNameEN);
-        	 System.out.println(cardid);
-        	 System.out.println(custCode);
-        	 System.out.println(marketingId);
-        
-//        request.setAttribute("modeEdit", false);
-        
+        request.setAttribute("modeEdit", false);
         RequestDispatcher dispatcher = request.getRequestDispatcher("form.jsp");
         dispatcher.forward(request, response);
     }
@@ -191,11 +165,20 @@ public class Fcte011Controller extends HttpServlet {
     private void showDefaultInfoForm(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, ServletException, IOException {
     	
-        String cardid = request.getParameter("cardid");
-        AccPayment existingAccPayment = accPaymentDAO.defaultInfoAccPayment(cardid);
+         String cardid = request.getParameter("cardid");
+         System.out.println("2.12");
+         System.out.println(cardid);
+         AccPayment existingAccPayment = accPaymentDAO.defaultInfoAccPayment(cardid);
+         if(existingAccPayment !=null) {
+    	   	 System.out.println(existingAccPayment.getCustcode());
+    	   	 System.out.println(existingAccPayment.getBankbranchcode());
+    	   	 System.out.println(existingAccPayment.getBankcode());
+    	   	 System.out.println(existingAccPayment.getCardid());
+         }
+         request.setAttribute("modeEdit", false);
+   
         request.setAttribute("accPayment", existingAccPayment);
-        request.setAttribute("modeEdit", false);
-        
+
         RequestDispatcher dispatcher = request.getRequestDispatcher("form.jsp");
         dispatcher.forward(request, response);
     }
@@ -259,7 +242,7 @@ public class Fcte011Controller extends HttpServlet {
         // Redirect the user to the list page
         HttpSession session = request.getSession();
         session.setAttribute("needFetchData", "true");
-        response.sendRedirect("searchList");
+        response.sendRedirect("searchList?custcode="+ custcode + "&cardid=" + cardid);
     }
 
     private void updateAccPayment(HttpServletRequest request, HttpServletResponse response)
@@ -297,7 +280,7 @@ public class Fcte011Controller extends HttpServlet {
         // Redirect the user to the list page
         HttpSession session = request.getSession();
         session.setAttribute("needFetchData", "true");
-        response.sendRedirect("searchList");
+        response.sendRedirect("searchList?custcode="+ custcode + "&cardid=" + cardid);
     }
 
     private void deleteAccPayment(HttpServletRequest request, HttpServletResponse response)
@@ -309,11 +292,10 @@ public class Fcte011Controller extends HttpServlet {
         String transtype = request.getParameter("transtype");
         String rptype = request.getParameter("rptype");
         accPaymentDAO.deleteAccPayment(cardid, custcode, account, transtype, rptype);
-        
 
         HttpSession session = request.getSession();
         session.setAttribute("needFetchData", "true");
-        response.sendRedirect("searchList");
+        response.sendRedirect("searchList?custcode="+ custcode + "&cardid=" + cardid);
     }
 
 }

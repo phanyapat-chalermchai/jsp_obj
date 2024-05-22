@@ -42,6 +42,28 @@
         }
         input.value = value;
     }
+
+    function changeItemsPerPage(value) {
+        let form = document.getElementById('searchForm');
+        let input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'itemsPerPage';
+        input.value = value;
+        form.appendChild(input);
+        form.submit();
+    }
+    
+    function redirectToDefaultInfo() {
+    	var cardid = document.querySelector("input[name='cardid']").value;
+        if (cardid.trim() === "") {
+            // Card ID is empty, do not redirect
+            alert("Can't use default Infomation, Please enter a Card ID.");
+        } else {
+            // Card ID is not empty, construct and redirect
+            var defaultInfoURL = "<c:out value='${defaultInfoURL}' />";
+            window.location.href = defaultInfoURL + "?cardid=" + cardid;
+        }
+    }
 </script>
 
 <% 
@@ -49,18 +71,6 @@
     AccPayment accPayment = (AccPayment) request.getAttribute("accPayment");
     String formattedEffectDate = (accPayment != null && accPayment.getEffdate() != null) ? sdf.format(accPayment.getEffdate()) : sdf.format(new Date());
     String formattedEndDate = (accPayment != null && accPayment.getEnddate() != null) ? sdf.format(accPayment.getEnddate()) : "9999-12-31";
-    
-
-	String appId = (String) session.getAttribute("appId");
-	String channel = (String) session.getAttribute("channel");
-	String custNameEN = (String) session.getAttribute("custNameEN");
-	String custNameTH = (String) session.getAttribute("custNameTH");
-	String custCode = (String) session.getAttribute("custCode");
-	String cardid = (String) session.getAttribute("cardid");
-	String marketingId = (String) session.getAttribute("marketingId");
-	String branch = (String) session.getAttribute("branch");
-	
-	System.out.println(custCode);
 %>
 
 <style>
@@ -107,7 +117,7 @@
                             <div class="input-group">
                                 <input required step="1" oninput="this.value = this.value.replace(/\D/g, '')" maxlength="20" type="text" class="form-control" name="cardid" value="<c:out value='${accPayment.cardid}' />" <c:if test="${modeEdit}">disabled</c:if>>
                                 <div class="input-group-append">
-                                    <button class="btn btn-primary" type="button" onclick="window.location.href='<%=request.getContextPath()%>/defaultInfo'"> <c:if test="${modeEdit}">disabled</c:if>>Default Information</button>
+                                    <button <c:if test="${modeEdit}">disabled</c:if> class="btn btn-primary" type="button" onclick="redirectToDefaultInfo()"> Default Information</button>
                                 </div>
                             </div>
                         </div>

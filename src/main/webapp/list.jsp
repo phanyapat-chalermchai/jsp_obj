@@ -4,14 +4,9 @@
 <%@ page import="com.jsp.fcte.modal.AccPayment" %>
 
 <% 
-	String appId = (String) session.getAttribute("appId");
-	String channel = (String) session.getAttribute("channel");
-	String custNameEN = (String) session.getAttribute("custNameEN");
-	String custNameTH = (String) session.getAttribute("custNameTH");
-	String custCode = (String) session.getAttribute("custCode");
-	String cardid = (String) session.getAttribute("cardid");
-	String marketingId = (String) session.getAttribute("marketingId");
-	String branch = (String) session.getAttribute("branch");
+	//Retrieve URL parameters
+	String custcode = request.getParameter("custcode");
+	String cardid = request.getParameter("cardid");
 %>
 
 
@@ -46,7 +41,7 @@
                         <div class="form-group row">
                             <label for="custcode" class="col-sm-4 col-form-label text-right">Customer ID :</label>
                             <div class="col-sm-6">
-                                <input type="text" class="form-control" id="custcode" name="custcode" placeholder="Customer ID" value="${custCode}" step="1" oninput="this.value = this.value.replace(/\D/g, '')">
+                                <input type="text" class="form-control" id="custcode" name="custcode" placeholder="Customer ID" value="${custcode}" step="1" oninput="this.value = this.value.replace(/\D/g, '')">
                             </div>
                         </div>
                         <div class="form-group row">
@@ -246,19 +241,6 @@
 				    </div>
 				</div>
             </c:if>
-            <div class="container mt-4">
-			    <h5>Search Parameters:</h5>
-			    <ul>
-			        <li><strong>Application ID:</strong> <%= appId %></li>
-			        <li><strong>Channel:</strong> <%= channel %></li>
-			        <li><strong>Customer Name (EN):</strong> <%= custNameEN %></li>
-			        <li><strong>Customer Name (TH):</strong> <%= custNameTH %></li>
-			        <li><strong>Customer Code:</strong> <%= custCode %></li>
-			        <li><strong>Card ID:</strong> <%= cardid %></li>
-			        <li><strong>Marketing ID:</strong> <%= marketingId %></li>
-			        <li><strong>Branch:</strong> <%= branch %></li>
-			    </ul>
-			</div>
         </div>
     </div>
 
