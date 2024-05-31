@@ -1,8 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ page import="java.util.Date" %>
+<%@ page import="java.util.HashMap" %>
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="com.jsp.fcte.modal.AccPayment" %>
+<%@ page import="com.jsp.fcte.dto.SearchQueryFcte011DTO" %>
 <link rel="stylesheet" href="path/to/datepicker.css">
 <script src="path/to/jquery.js"></script>
 <script src="path/to/datepicker.js"></script>
@@ -60,8 +62,7 @@
             alert("Can't use default Infomation, Please enter a Card ID.");
         } else {
             // Card ID is not empty, construct and redirect
-            var defaultInfoURL = "<c:out value='${defaultInfoURL}' />";
-            window.location.href = defaultInfoURL + "?cardid=" + cardid;
+            window.location.href = "defaultInfo?cardid=" + cardid;
         }
     }
 </script>
@@ -71,6 +72,29 @@
     AccPayment accPayment = (AccPayment) request.getAttribute("accPayment");
     String formattedEffectDate = (accPayment != null && accPayment.getEffdate() != null) ? sdf.format(accPayment.getEffdate()) : sdf.format(new Date());
     String formattedEndDate = (accPayment != null && accPayment.getEnddate() != null) ? sdf.format(accPayment.getEnddate()) : "9999-12-31";
+
+  	String queryAppId = (String) session.getAttribute("appId");
+  	String queryChannel = (String) session.getAttribute("channel");
+  	String queryCustNameEN = (String) session.getAttribute("custNameEN");
+  	String queryCustNameTH = (String) session.getAttribute("custNameTH");
+  	String queryCustCode = (String) session.getAttribute("custcode");
+  	String queryCardid = (String) session.getAttribute("cardid");
+  	String queryMarketingId = (String) session.getAttribute("marketingId");
+  	String queryBranch = (String) session.getAttribute("branch");
+
+  	SearchQueryFcte011DTO query = (SearchQueryFcte011DTO) session.getAttribute("query");
+
+  	
+    System.out.println("____________________form.jsp start______________________");
+    System.out.println(queryAppId);
+    System.out.println(queryChannel);
+    System.out.println(queryCustNameEN);
+    System.out.println(queryCustNameTH);
+    System.out.println(query.getCustcode());
+    System.out.println(query.getCardid());
+    System.out.println(queryMarketingId);
+    System.out.println(queryBranch);
+    System.out.println("____________________form.jsp end______________________");
 %>
 
 <style>
@@ -98,6 +122,17 @@
                             <c:if test="${!modeEdit}">Add New FCTE011</c:if>
                         </h2>
                     </div>
+                    
+                    <!-- keep search query for fetch data  -->
+                    <input type="hidden" name="query" value="<%=query %>">
+                    <input type="hidden" name="queryAppId" value="<%=queryAppId %>">
+                    <input type="hidden" name="queryChannel" value="<%=queryChannel %>">
+                    <input type="hidden" name="queryCustNameEN" value="<%=queryCustNameEN %>">
+                    <input type="hidden" name="queryCustNameTH" value="<%=queryCustNameTH %>">
+                    <input type="hidden" name="queryCustCode" value="<%=queryCustCode %>">
+                    <input type="hidden" name="queryCardid" value="<%=queryCardid %>">
+                    <input type="hidden" name="queryMarketingId" value="<%=queryMarketingId %>">
+                    <input type="hidden" name="queryBranch" value="<%=queryBranch %>">
 
                     <c:if test="${modeEdit}">
                         <!-- Hidden fields for parameters for send data to back-end when default field disable -->

@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Stream;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -17,6 +19,7 @@ import javax.servlet.http.HttpSession;
 
 import com.jsp.fcte.dao.*;
 import com.jsp.fcte.dto.PaginationDTO;
+import com.jsp.fcte.dto.SearchQueryFcte011DTO;
 import com.jsp.fcte.modal.*;
 
 
@@ -95,7 +98,7 @@ public class Fcte011Controller extends HttpServlet {
         String channel = request.getParameter("channel");
         String custNameEN = request.getParameter("custNameEN");
         String custNameTH = request.getParameter("custNameTH");
-        String custCode = request.getParameter("custcode");
+        String custcode = request.getParameter("custcode");
         String cardid = request.getParameter("cardid");
         String marketingId = request.getParameter("marketingId");
         String branch = request.getParameter("branch");
@@ -103,11 +106,31 @@ public class Fcte011Controller extends HttpServlet {
         int currentPage = request.getParameter("currentPage") != null ? Integer.valueOf(request.getParameter("currentPage")) : 1;
         int itemsPerPage = request.getParameter("itemsPerPage")!= null ? Integer.valueOf(request.getParameter("itemsPerPage")) : 5;
     	
+    	
+        String queryAppId = request.getParameter("queryAppId");
+      	String queryChannel = request.getParameter("queryChannel");
+      	String queryCustNameEN = request.getParameter("queryCustNameEN");
+      	String queryCustNameTH = request.getParameter("queryCustNameTH");
+      	String queryCustCode = request.getParameter("queryCustCode");
+      	String queryCardid = request.getParameter("queryCardid");
+      	String queryMarketingId = request.getParameter("queryMarketingId");
+      	String queryBranch = request.getParameter("queryBranch");
+
+        System.out.println("_______________________2222____11.38__________________");
+        System.out.println(queryAppId);
+        System.out.println(queryChannel);
+        System.out.println(queryCustNameEN);
+        System.out.println(queryCustNameTH);
+        System.out.println(queryCustCode);
+        System.out.println(queryCardid);
+        System.out.println(queryMarketingId);
+        System.out.println(queryBranch);
+        System.out.println("_______________________222______________________");
 //        System.out.println("search_1.35AM");
 //        System.out.println("search_1.354AM");
 //        System.out.println("search_1.3521321AM");
 //
-//        HttpSession session = request.getSession();
+        HttpSession session = request.getSession();
 //        if(session.getAttribute("needFetchData") != null && session.getAttribute("needFetchData").equals("true")) {
 //        	 System.out.println("needFetchData");
 //	    	 appId = (String) session.getAttribute("appId");
@@ -127,20 +150,41 @@ public class Fcte011Controller extends HttpServlet {
 //        }
 //        
 //        //set session
-//        session.setAttribute("appId", appId);
-//        session.setAttribute("channel", channel);
-//        session.setAttribute("custNameEN", custNameEN);
-//        session.setAttribute("custNameTH", custNameTH);
-//        session.setAttribute("custCode", custCode);
-//        session.setAttribute("cardid", cardid);
-//        session.setAttribute("marketingId", marketingId);
-//        session.setAttribute("branch", branch);
-//        session.setAttribute("currentPage", currentPage);
-//        session.setAttribute("itemsPerPage", itemsPerPage);
-//        session.setAttribute("needFetchData", "false");
+        session.setAttribute("appId", appId);
+        session.setAttribute("channel", channel);
+        session.setAttribute("custNameEN", custNameEN);
+        session.setAttribute("custNameTH", custNameTH);
+        session.setAttribute("custcode", custcode);
+        session.setAttribute("cardid", cardid);
+        session.setAttribute("marketingId", marketingId);
+        session.setAttribute("branch", branch);
+        session.setAttribute("currentPage", currentPage);
+        session.setAttribute("itemsPerPage", itemsPerPage);
+        session.setAttribute("needFetchData", "false");
+        
+        SearchQueryFcte011DTO query = new SearchQueryFcte011DTO();
+        query.setAppId(appId);
+        query.setChannel(channel);
+        query.setCustNameEN(custNameEN);
+        query.setCustNameTH(custNameTH);
+        query.setCustcode(custcode);
+        query.setCardid(cardid);
+        query.setMarketingId(marketingId);
+        query.setBranch(branch);
+        session.setAttribute("query", query);
+        
+//        HashMap<String, String> query = new HashMap<>();
+//        query.put("appId", appId);
+//        query.put("channel", channel);
+//        query.put("custNameEN", custNameEN);
+//        query.put("custNameTH", custNameTH);
+//        query.put("custcode", custcode);
+//        query.put("cardid", cardid);
+//        query.put("marketingId", marketingId);
+//        query.put("branch", branch);
         
         //get query list
-        PaginationDTO<AccPayment> fcte011DTO = accPaymentDAO.searchListAccPayment(appId, custCode, custNameEN,
+        PaginationDTO<AccPayment> fcte011DTO = accPaymentDAO.searchListAccPayment(appId, custcode, custNameEN,
         		marketingId, channel, cardid, custNameTH, branch, currentPage, itemsPerPage);
         
         //set query for list.jsp
@@ -268,6 +312,27 @@ public class Fcte011Controller extends HttpServlet {
         
         String enddateStr = request.getParameter("enddate");
         Date enddate = (enddateStr != null && !enddateStr.isEmpty()) ? Date.valueOf(enddateStr) : null;
+        
+
+        String queryAppId = request.getParameter("queryAppId");
+      	String queryChannel = request.getParameter("queryChannel");
+      	String queryCustNameEN = request.getParameter("queryCustNameEN");
+      	String queryCustNameTH = request.getParameter("queryCustNameTH");
+      	String queryCustCode = request.getParameter("queryCustCode");
+      	String queryCardid = request.getParameter("queryCardid");
+      	String queryMarketingId = request.getParameter("queryMarketingId");
+      	String queryBranch = request.getParameter("queryBranch");
+
+        System.out.println("___________________update____2222____1.00pm__________________");
+        System.out.println(queryAppId);
+        System.out.println(queryChannel);
+        System.out.println(queryCustNameEN);
+        System.out.println(queryCustNameTH);
+        System.out.println(queryCustCode);
+        System.out.println(queryCardid);
+        System.out.println(queryMarketingId);
+        System.out.println(queryBranch);
+        System.out.println("_______________________222______________________");
 
         // Create a new AccPayment object with the retrieved values
         AccPayment accPayment = new AccPayment(cardid, custacct, custcode, account, transtype, rptype, bankcheqcode,

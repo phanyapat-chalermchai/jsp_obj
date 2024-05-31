@@ -85,7 +85,6 @@ public class Fcte011DAO {
 	    if (!WHERE_CLAUSE.isEmpty()) hasPreviousCondition = true;
     	WHERE_CLAUSE += addSqlStringCondition(inputBranch, "cc.branch", hasPreviousCondition);
 	    if (!WHERE_CLAUSE.isEmpty()) hasPreviousCondition = true;
-      
 
         // Calculate OFFSET and FETCH
         int offset = (currentPage - 1) * itemsPerPage;

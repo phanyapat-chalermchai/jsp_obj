@@ -1,13 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ page import="javax.servlet.http.HttpSession" %>
 <%@ page import="com.jsp.fcte.modal.AccPayment" %>
-
-<% 
-	//Retrieve URL parameters
-	String custcode = request.getParameter("custcode");
-	String cardid = request.getParameter("cardid");
-%>
 
 
 <html>
@@ -29,73 +22,73 @@
             <br>
 
             <form id="searchForm" method="get" action="<%=request.getContextPath()%>/searchList" class="form">
-                <div class="form-row" style="text-align: center; align-items:center; justify-content-:center;">
-                    <!-- First Column -->
-                    <div class="col-md-6">
-                        <div class="form-group row">
-                            <label for="appId" class="col-sm-4 col-form-label text-right">Application ID :</label>
-                            <div class="col-sm-6">
-                                <input type="text" class="form-control" id="appId" name="appId" placeholder="Application ID" value="${appId}">
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="custcode" class="col-sm-4 col-form-label text-right">Customer ID :</label>
-                            <div class="col-sm-6">
-                                <input type="text" class="form-control" id="custcode" name="custcode" placeholder="Customer ID" value="${custcode}" step="1" oninput="this.value = this.value.replace(/\D/g, '')">
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="custName" class="col-sm-4 col-form-label text-right">Customer Name :</label>
-                            <div class="col-sm-6">
-                                <input type="text" class="form-control" id="custNameEN" name="custNameEN" placeholder="Customer Name" value="${custNameEN}">
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="marketingId" class="col-sm-4 col-form-label text-right">Marketing ID :</label>
-                            <div class="col-sm-6">
-                                <input type="text" class="form-control" id="marketingId" name="marketingId" placeholder="Marketing ID" value="${marketingId}" step="1" oninput="this.value = this.value.replace(/\D/g, '')">
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Second Column -->
-                    <div class="col-md-5">
-                        <div class="form-group row">
-                            <label for="channel" class="col-sm-4 col-form-label text-right">Channel :</label>
-                            <div class="col-sm-8">
-                                <select class="form-control" name="channel">
-                                    <option value="" ${channel == '' ? 'selected' : ''}></option>
-                                    <option value="ONLINE" ${channel == 'ONLINE' ? 'selected' : ''}>ONLINE</option>
-                                    <option value="OFFLINE" ${channel == 'OFFLINE' ? 'selected' : ''}>OFFLINE</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="cardid" class="col-sm-4 col-form-label text-right">Card ID :</label>
-                            <div class="col-sm-8">
-                                <input type="text" class="form-control" id="cardid" name="cardid" placeholder="Card ID" value="${cardid}" step="1" oninput="this.value = this.value.replace(/\D/g, '')">
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="fullName" class="col-sm-4 col-form-label text-right">ชื่อ - นามสกุล :</label>
-                            <div class="col-sm-8">
-                                <input type="text" class="form-control" id="custNameTH" name="custNameTH" placeholder="ชื่อ - นามสกุล" value="${custNameTH}">
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="branch" class="col-sm-4 col-form-label text-right">Branch :</label>
-                            <div class="col-sm-8">
-                                <input type="text" class="form-control" id="branch" name="branch" placeholder="Branch" value="${branch}" step="1" oninput="this.value = this.value.replace(/\D/g, '')">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="col-md-12 text-right">
-                        <button type="submit" class="btn btn-primary mr-3">Search</button>
-                        <button type="reset" class="btn btn-secondary" onclick="window.location.href='<%=request.getContextPath()%>/list'">Reset</button>
-                    </div>
-                </div>
-            </form>
+			    <div class="form-row" style="text-align: center; align-items:center; justify-content-:center;">
+			        <!-- First Column -->
+			        <div class="col-md-6">
+			            <div class="form-group row">
+			                <label for="appId" class="col-sm-4 col-form-label text-right">Application ID :</label>
+			                <div class="col-sm-6">
+			                    <input type="text" class="form-control" id="appId" name="appId" placeholder="Application ID" value="${param.appId}">
+			                </div>
+			            </div>
+			            <div class="form-group row">
+			                <label for="custcode" class="col-sm-4 col-form-label text-right">Customer ID :</label>
+			                <div class="col-sm-6">
+			                    <input type="text" class="form-control" id="custcode" name="custcode" placeholder="Customer ID" step="1" oninput="this.value = this.value.replace(/\D/g, '')" value="${param.custcode}">
+			                </div>
+			            </div>
+			            <div class="form-group row">
+			                <label for="custName" class="col-sm-4 col-form-label text-right">Customer Name :</label>
+			                <div class="col-sm-6">
+			                    <input type="text" class="form-control" id="custNameEN" name="custNameEN" placeholder="Customer Name" value="${param.custNameEN}">
+			                </div>
+			            </div>
+			            <div class="form-group row">
+			                <label for="marketingId" class="col-sm-4 col-form-label text-right">Marketing ID :</label>
+			                <div class="col-sm-6">
+			                    <input type="text" class="form-control" id="marketingId" name="marketingId" placeholder="Marketing ID" step="1" oninput="this.value = this.value.replace(/\D/g, '')" value="${param.marketingId}">
+			                </div>
+			            </div>
+			        </div>
+			        <!-- Second Column -->
+			        <div class="col-md-5">
+			            <div class="form-group row">
+			                <label for="channel" class="col-sm-4 col-form-label text-right">Channel :</label>
+			                <div class="col-sm-8">
+			                    <select class="form-control" name="channel">
+			                        <option value="" ${param.channel == '' ? 'selected' : ''}></option>
+			                        <option value="ONLINE" ${param.channel == 'ONLINE' ? 'selected' : ''}>ONLINE</option>
+			                        <option value="OFFLINE" ${param.channel == 'OFFLINE' ? 'selected' : ''}>OFFLINE</option>
+			                    </select>
+			                </div>
+			            </div>
+			            <div class="form-group row">
+			                <label for="cardid" class="col-sm-4 col-form-label text-right">Card ID :</label>
+			                <div class="col-sm-8">
+			                    <input type="text" class="form-control" id="cardid" name="cardid" placeholder="Card ID" step="1" oninput="this.value = this.value.replace(/\D/g, '')" value="${param.cardid}">
+			                </div>
+			            </div>
+			            <div class="form-group row">
+			                <label for="fullName" class="col-sm-4 col-form-label text-right">ชื่อ - นามสกุล :</label>
+			                <div class="col-sm-8">
+			                    <input type="text" class="form-control" id="custNameTH" name="custNameTH" placeholder="ชื่อ - นามสกุล" value="${param.custNameTH}">
+			                </div>
+			            </div>
+			            <div class="form-group row">
+			                <label for="branch" class="col-sm-4 col-form-label text-right">Branch :</label>
+			                <div class="col-sm-8">
+			                    <input type="text" class="form-control" id="branch" name="branch" placeholder="Branch" step="1" oninput="this.value = this.value.replace(/\D/g, '')" value="${param.branch}">
+			                </div>
+			            </div>
+			        </div>
+			    </div>
+			    <div class="form-row">
+			        <div class="col-md-12 text-right">
+			            <button type="submit" class="btn btn-primary mr-3">Search</button>
+			            <button type="reset" class="btn btn-secondary" onclick="window.location.href='<%=request.getContextPath()%>/list'">Reset</button>
+			        </div>
+			    </div>
+			</form>
             <hr>
 
             <div class="container d-flex justify-content-between align-items-center">
